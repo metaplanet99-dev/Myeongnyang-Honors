@@ -319,6 +319,20 @@ python -m http.server 8777
 ```
 그 뒤 브라우저에서 `http://localhost:8777` 로 접속합니다.
 
+### 수정 후 화면이 그대로일 때 (캐시)
+GitHub Pages는 `app.js` · `styles.css`를 약 10분간 브라우저에 캐시합니다.
+그래서 코드를 고쳐 올려도 한동안 옛 화면이 그대로 보일 수 있습니다.
+
+이를 막기 위해 `index.html`에서 두 파일을 버전 번호와 함께 불러옵니다.
+
+```html
+<link rel="stylesheet" href="./styles.css?v=2" />
+<script src="./app.js?v=2"></script>
+```
+
+**`app.js` 또는 `styles.css`를 고쳐서 올릴 때는 이 숫자를 반드시 1 올려 주세요.**
+숫자를 바꾸지 않으면 방문자에게는 예전 화면이 계속 보입니다.
+
 ### 실내 공간 사진 교체
 랜딩의 공간 소개 캐러셀 이미지는 `app.js` 상단의 `spaceImages` 배열에서 관리합니다.
 사진 파일을 `uploads/` 폴더에 넣고 `{ src: "uploads/파일명.jpg", alt: "설명" }` 항목을 원하는 개수만큼 추가하면 자동으로 느리게 스크롤됩니다.
