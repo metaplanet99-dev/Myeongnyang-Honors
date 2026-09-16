@@ -828,6 +828,18 @@ th {
 
   .landing-hero {
     min-height: auto;
+    /* 히어로 원본(1920x900)은 그림이 오른쪽 60~100% 구간에만 있고 왼쪽은 단색이다.
+       폰에서는 세로로 길게 잘리면서 가운데(빈 남색)만 보여 허전했다.
+       보여줄 영역을 오른쪽으로 옮기고, 글자가 얹히는 위쪽만 더 어둡게 덮는다. */
+    background:
+      linear-gradient(
+        176deg,
+        rgba(13, 27, 62, 0.94) 0%,
+        rgba(13, 27, 62, 0.86) 45%,
+        rgba(13, 27, 62, 0.74) 72%,
+        rgba(13, 27, 62, 0.30) 100%
+      ),
+      url("./uploads/hero.jpg") 82% center / cover;
   }
 
   .hero-copy {
