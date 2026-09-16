@@ -33,9 +33,26 @@
 | `--green` | `#1a7a4a` | 성공/승인 버튼 |
 
 ### Typography
-- **폰트**: Pretendard (한글), Barlow Condensed (영문 헤딩/라벨)
-- CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css`
-- CDN: `https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700`
+- **폰트**: Pretendard Variable (한글·본문 전반), Barlow Condensed (영문 헤딩/라벨)
+
+```html
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+```
+
+```css
+font-family: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
+```
+
+**전체 글꼴(`pretendard.css`)을 쓰지 마세요.** 처음에 그렇게 되어 있었는데,
+한글 전체 글자를 굵기별로 4벌 내려받아 **약 3MB**를 소비했습니다. 사진 전부(0.7MB)보다 큽니다.
+
+지금은 `pretendardvariable-dynamic-subset.css`를 씁니다.
+
+- 화면에 실제로 쓰인 글자 구간만 조각으로 내려받습니다 → **약 380KB (87% 감소)**
+- 가변 글꼴이라 굵기 45~920을 파일 하나로 처리합니다 (굵기마다 따로 받지 않음)
+- **버전(`@v1.3.9`)을 반드시 고정해 두세요.** 버전 없이 쓰면 원작자가 파일 위치를
+  바꿀 때 글꼴이 통째로 깨집니다. 실제로 이 저장소는 경로가 바뀐 이력이 있습니다.
 
 | 용도 | size | weight |
 |------|------|--------|
