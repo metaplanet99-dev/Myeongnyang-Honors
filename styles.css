@@ -834,12 +834,22 @@ th {
     background:
       linear-gradient(
         176deg,
-        rgba(13, 27, 62, 0.94) 0%,
-        rgba(13, 27, 62, 0.86) 45%,
-        rgba(13, 27, 62, 0.74) 72%,
-        rgba(13, 27, 62, 0.30) 100%
+        rgba(13, 27, 62, 0.84) 0%,
+        rgba(13, 27, 62, 0.7) 45%,
+        rgba(13, 27, 62, 0.5) 72%,
+        rgba(13, 27, 62, 0.14) 100%
       ),
-      url("./uploads/hero.jpg") 82% center / cover;
+      url("./uploads/hero.jpg") 92% center / cover;
+  }
+
+  /* 덮는 막을 옅게 해 그림을 살린 대신, 글자 자체에 그림자를 줘서 읽히게 한다.
+     막을 더 진하게 하면 대비는 오르지만 그림이 다시 안 보인다. */
+  .hero-copy .eyebrow,
+  .hero-copy h1,
+  .hero-copy p {
+    text-shadow:
+      0 1px 2px rgba(8, 16, 40, 0.75),
+      0 4px 18px rgba(8, 16, 40, 0.65);
   }
 
   .hero-copy {
