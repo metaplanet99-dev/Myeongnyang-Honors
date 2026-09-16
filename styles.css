@@ -17,6 +17,16 @@
   --page-gutter: clamp(24px, 7vw, 120px);
 }
 
+/* 큰 제목용 세리프. 네이버 마루부리에서 이 사이트에 필요한 글자만 추려
+   저장소에 직접 담았다(258KB). 외부 CDN에 의존하지 않는다. */
+@font-face {
+  font-family: "MaruBuri";
+  src: url("./fonts/MaruBuri-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -51,6 +61,15 @@ h1,
 h2,
 h3 {
   text-wrap: balance;
+}
+
+/* 큰 제목만 세리프로. 본문·버튼·표는 Pretendard 그대로 둔다.
+   세리프는 작은 글씨에서 가독성이 떨어지므로 h3 이하에는 쓰지 않는다. */
+h1,
+h2 {
+  font-family: "MaruBuri", "Pretendard Variable", "Pretendard", serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 p,
@@ -110,9 +129,9 @@ time {
   border: 0;
   background: none;
   color: var(--navy);
-  font-family: "Barlow Condensed", "Pretendard Variable", "Pretendard", sans-serif;
+  font-family: "MaruBuri", "Pretendard Variable", "Pretendard", serif;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.5px;
 }
 
@@ -215,22 +234,26 @@ time {
 .section-label {
   margin: 0 0 10px;
   color: var(--muted);
-  font-family: "Barlow Condensed", "Pretendard Variable", "Pretendard", sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-family: "Cormorant Garamond", "Pretendard Variable", "Pretendard", serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
 }
 
 .hero-copy .eyebrow {
+  /* 이 자리만 한글이라 영문용 넓은 자간을 쓰지 않는다. */
   color: rgba(255, 255, 255, 0.72);
+  font-family: "Pretendard Variable", "Pretendard", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .hero-copy h1 {
   max-width: 720px;
   margin: 0;
   font-size: clamp(40px, 7vw, 86px);
-  line-height: 1.02;
-  font-weight: 900;
+  line-height: 1.12;
 }
 
 .hero-copy p {
@@ -279,7 +302,7 @@ time {
 .view-title h1 {
   margin: 0;
   font-size: clamp(24px, 3vw, 38px);
-  line-height: 1.18;
+  line-height: 1.26;
 }
 
 .section-desc,
@@ -391,9 +414,10 @@ time {
 }
 
 .grade-head strong {
-  font-family: "Barlow Condensed", "Pretendard Variable", "Pretendard", sans-serif;
-  font-size: 22px;
-  letter-spacing: 1px;
+  font-family: "Cormorant Garamond", "Pretendard Variable", "Pretendard", serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 .benefit-list {
@@ -1040,7 +1064,7 @@ th {
 
   .hero-copy h1 {
     font-size: 34px;
-    line-height: 1.12;
+    line-height: 1.18;
   }
 
   .hero-desc br {
@@ -1129,10 +1153,11 @@ th {
 .location-meta dt,
 .spec-list dt {
   margin: 0;
-  font-family: "Barlow Condensed", "Pretendard Variable", "Pretendard", sans-serif;
-  font-size: 11px;
+  /* 이 라벨들은 한글(이용료, 운영 시간 등)이라 Pretendard로 둔다. */
+  font-family: "Pretendard Variable", "Pretendard", sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--muted);
 }
