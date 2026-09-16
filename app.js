@@ -242,7 +242,7 @@ function landing() {
         <div class="hero-copy">
           <p class="eyebrow">(재)명량문화재단 공유공간</p>
           <h1>음악과 예술을 위한 프리미엄 회원제 공간</h1>
-          <p class="hero-desc">회원 승인부터 예약, 게스트 정산, 회비 관리까지 <br />한 번에 운영할 수 있는 명량아너스클럽 웹앱입니다.</p>
+          <p class="hero-desc">회원 승인부터 예약, 게스트 정산, 회비 관리까지 <br />한 번에 운영할 수 있는 명량아너스클럽 웹앱입니다.</p>
           <div class="hero-actions">
             <button class="secondary-btn hero-cta" onclick="setLoginIntent('signup')">${icon("people")}회원가입하기</button>
             <button class="primary-btn hero-cta" onclick="setLoginIntent('reservation')">${icon("calendar")}예약하기</button>
@@ -262,7 +262,7 @@ function landing() {
               <p class="section-label">MEMBERSHIP</p>
               <h2>회원 등급 안내</h2>
             </div>
-            <p>이용 목적과 혜택 범위에 맞춰 VIP 또는 VVIP 등급을 선택할 수 있습니다.</p>
+            <p>이용 목적과 혜택 범위에 맞춰 VIP 또는 VVIP 등급을 선택할 수 있습니다.</p>
           </div>
           <div class="membership-grid">
             ${gradeCard("VIP", "연회비 300,000원", ["게스트 동반 10명 이내", "음식물 및 음료 반입 가능", "오후 6시부터 10시까지 이용"], false)}
@@ -622,7 +622,7 @@ function signup() {
         <div>
           <p class="section-label">MEMBERSHIP</p>
           <h1>가입 신청서</h1>
-          <p>운영위원회 승인 후 예약 서비스를 이용하실 수 있습니다.</p>
+          <p>운영위원회 승인 후 예약 서비스를 이용하실 수 있습니다.</p>
         </div>
       </div>
       <section class="grid two">
@@ -665,7 +665,7 @@ function waiting() {
         <div class="card pad">
           <span class="pill gold">심사 대기 중</span>
           <h1 style="margin:18px 0 8px;">가입 신청이 접수되었습니다.</h1>
-          <p class="section-desc">운영위원회 승인 후 모든 회원 기능을 이용하실 수 있습니다.</p>
+          <p class="section-desc">운영위원회 승인 후 모든 회원 기능을 이용하실 수 있습니다.</p>
           <button class="green-btn" style="margin-top:22px;" onclick="setRoute('home')">${icon("check")}승인 완료 체험하기</button>
         </div>
         <div class="card pad">
@@ -810,7 +810,7 @@ function myinfo() {
       <div class="card pad">
         <p class="section-label">NEXT BOOKING</p>
         <h3>${upcoming ? formatDate(upcoming.date) : "예정된 예약 없음"}</h3>
-        <p class="section-desc">${upcoming ? `${upcoming.time} · 게스트 ${upcoming.guests}명 · ${upcoming.status}` : "필요한 날짜를 선택해 새 예약을 신청해 주세요."}</p>
+        <p class="section-desc">${upcoming ? `<span class="nowrap">${upcoming.time}</span> · <span class="nowrap">게스트 ${upcoming.guests}명 · ${upcoming.status}</span>` : "필요한 날짜를 선택해 새 예약을 신청해 주세요."}</p>
         <button class="ghost-btn" style="margin-top:16px;" onclick="setRoute('${upcoming ? "reservations" : "reservation"}')">${icon(upcoming ? "list" : "calendar")}${upcoming ? "예약내역 보기" : "예약하기"}</button>
       </div>
       <div class="card pad">

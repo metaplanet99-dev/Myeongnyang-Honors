@@ -27,6 +27,13 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Pretendard", system-ui, sans-serif;
+
+  /* 한글은 기본값(word-break: normal)이면 단어 중간에서 잘린다.
+     keep-all은 어절 단위로만 끊고, 끊을 데가 없는 긴 문자열만
+     overflow-wrap이 강제로 넘긴다. 상속되는 속성이라 여기 한 번만 쓰면 된다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
 }
 
 button,
@@ -42,19 +49,6 @@ button {
 
 h1,
 h2,
-h3,
-p,
-li,
-.row span,
-.row strong,
-.stat span,
-.stat strong {
-  word-break: keep-all;
-  overflow-wrap: break-word;
-}
-
-h1,
-h2,
 h3 {
   text-wrap: balance;
 }
@@ -64,6 +58,20 @@ li,
 .section-desc,
 .view-title p {
   text-wrap: pretty;
+}
+
+/* 한 덩어리로 읽어야 하는 문구를 묶을 때 쓴다 (예: 시간 범위, 게스트 수) */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* 숫자·날짜·전화번호가 줄 사이에서 쪼개지지 않도록 */
+.stat strong,
+.row strong,
+.pill,
+time {
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .app {
