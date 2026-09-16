@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <script src="image-slot.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Pretendard', system-ui, sans-serif; background: #0d1a2e; }
+    input, button { font-family: 'Pretendard', system-ui, sans-serif; }
+    ::-webkit-scrollbar { display: none; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes checkPop { 0%{transform:scale(0);opacity:0} 65%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+    .img-scroll { display:flex; gap:10px; overflow-x:scroll; overflow-y:visible; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+    .img-scroll > * { flex:none; }
+    .card { background:white; border-radius:14px; box-shadow:0 2px 12px rgba(13,27,62,0.08); overflow:hidden; }
+    .shadow-sm { box-shadow:0 1px 6px rgba(13,27,62,0.06); }
+    .pill { display:inline-flex; align-items:center; padding:4px 14px; border-radius:100px; font-size:12px; font-weight:700; letter-spacing:.5px; }
+    .pill-navy { background:#1F3A7A; color:white; }
+    .pill-gold { background:#DA9616; color:white; }
+    .pill-outline { border:1.5px solid currentColor; background:transparent; }
+    .status-ok { display:inline-block; padding:3px 12px; border-radius:100px; background:#EBF0FF; color:#1F3A7A; font-size:12px; font-weight:700; }
+    .status-done { display:inline-block; padding:3px 12px; border-radius:100px; background:#F0F0F0; color:#5d5d60; font-size:12px; font-weight:700; }
+    .section-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600; letter-spacing:1.5px; color:#98989b; }
+    .hdr { flex:none; height:56px; display:flex; align-items:center; padding:0 16px; border-bottom:1px solid rgba(0,0,0,0.06); background:white; }
+    .back-btn { width:40px; height:40px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1F3A7A; font-size:26px; margin-left:-6px; }
+    .hdr-title { flex:1; text-align:center; margin:0; font-size:18px; font-weight:700; color:#0D1B3E; }
+    .field-label { display:block; font-size:13px; font-weight:600; color:#5D6B7A; margin-bottom:7px; }
+    .inp { width:100%; height:52px; border:1.5px solid #E2E8F0; border-radius:10px; padding:0 14px; font-size:16px; outline:none; color:#0D1B3E; background:white; font-family:'Pretendard',sans-serif; }
+    .pri-btn { width:100%; height:52px; background:#1F3A7A; border:none; border-radius:12px; cursor:pointer; font-size:17px; font-weight:700; color:white; font-family:'Pretendard',sans-serif; }
+    .green-btn { width:100%; height:52px; background:#1a7a4a; border:none; border-radius:12px; cursor:pointer; font-size:16px; font-weight:700; color:white; font-family:'Pretendard',sans-serif; }
+    .nav-bar { flex:none; height:58px; display:flex; background:white; border-top:1px solid rgba(0,0,0,0.06); }
+    .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:none; cursor:pointer; font-size:11px; font-weight:600; font-family:'Pretendard',sans-serif; }
+    .time-row { display:flex; justify-content:space-between; align-items:center; padding:11px 14px; background:#F4F6FA; border-radius:8px; margin-bottom:8px; }
+    .dot-blue { width:5px; height:5px; border-radius:50%; background:#1F3A7A; flex:none; margin-top:8px; }
+    .dot-gold { width:5px; height:5px; border-radius:50%; background:#DA9616; flex:none; margin-top:8px; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:28px 16px; background:#0d1a2e;">
+  <div style="font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.25); font-weight:600;">MYEONGNYANGONORS CLUB · PROTOTYPE</div>
+
+  <div style="width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative; box-shadow:0 40px 100px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.06); overflow:hidden; flex:none;">
+    <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:22px;z-index:50;"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:59px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 10px;z-index:40;pointer-events:none;">
+      <span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;"><svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M7.5 9.5a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1z" fill="white" stroke="none"/><path d="M4 6.5a4.9 4.9 0 0 1 7 0"/><path d="M1 3.5a9 9 0 0 1 13 0"/></svg><div style="width:22px;height:11px;border:1.5px solid rgba(255,255,255,.75);border-radius:2px;padding:1.5px;display:flex;align-items:center;"><div style="width:70%;height:100%;background:white;border-radius:1px;"></div></div></div>
+    </div>
+
+    <div style="position:absolute;top:59px;left:0;right:0;bottom:34px;overflow:hidden;background:#F8F9FC;">
+
+      <!-- ===== LANDING ===== -->
+      <sc-if value="{{ isLanding }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div style="flex:none;height:52px;background:white;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(0,0,0,0.06);">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#1F3A7A;letter-spacing:.5px;">명량아너스클럽</span>
+            <button onClick="{{ goToAdmin }}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#98989b;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">ADMIN</button>
+          </div>
+
+          <div style="flex:1;overflow-y:auto;">
+            <!-- Hero -->
+            <div style="position:relative;height:210px;overflow:hidden;">
+              <img src="uploads/hero.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;" alt="히어로 배경" />
+              <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,27,62,0.75) 0%,rgba(13,27,62,0.4) 100%);"></div>
+              <div style="position:relative;z-index:2;padding:28px 20px 30px;">
+                <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:1px;">(재)명량문화재단 공유공간</p>
+                <h2 style="margin:0 0 14px;font-size:26px;font-weight:900;color:white;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.3);">음악과 예술을<br>위한 프리미엄<br>회원제 공간</h2>
+                <div style="display:flex;gap:8px;"><span class="pill pill-navy" style="font-size:11px;">VIP</span><span class="pill pill-gold" style="font-size:11px;">VVIP</span></div>
+              </div>
+            </div>
+
+            <!-- Space images -->
+            <div style="padding:20px 18px 0;">
+              <p class="section-label" style="margin:0 0 12px;">공간 소개</p>
+              <div class="img-scroll" style="margin-bottom:14px;">
+                <image-slot id="space-1" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 1"></image-slot>
+                <image-slot id="space-2" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 2"></image-slot>
+                <image-slot id="space-3" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 3"></image-slot>
+                <image-slot id="space-4" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 4"></image-slot>
+                <image-slot id="space-5" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 5"></image-slot>
+                <image-slot id="space-6" shape="rounded" radius="10" style="width:300px;height:170px;" placeholder="공간 사진 6"></image-slot>
+              </div>
+              <p style="margin:0 0 0;font-size:15px;color:#374151;line-height:1.7;">프라이빗한 문화예술 공간으로, 소규모 공연·모임·개인 연습 등 다양한 활동을 위해 운영됩니다.</p>
+            </div>
+
+            <!-- 자격조건 -->
+            <div style="padding:20px 18px;border-bottom:1px solid rgba(0,0,0,0.06);">
+              <p class="section-label" style="margin:0 0 12px;">가입 자격</p>
+              <div class="card" style="padding:14px 16px;">
+                <p style="margin:0;font-size:15px;color:#0D1B3E;line-height:1.7;">음악과 예술을 사랑하는 남녀 중<br><strong>운영위원회 승인을 받은 자</strong></p>
+              </div>
+            </div>
+
+            <!-- 등급 -->
+            <div style="padding:20px 18px;border-bottom:1px solid rgba(0,0,0,0.06);background:white;">
+              <p class="section-label" style="margin:0 0 12px;">회원 등급 안내</p>
+              <div class="card" style="margin-bottom:10px;">
+                <div style="background:#1F3A7A;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;">
+                  <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:white;letter-spacing:1px;">VIP</span>
+                  <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.75);">연회비 300,000원</span>
+                </div>
+                <div style="padding:14px 16px;display:flex;flex-direction:column;gap:7px;">
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-blue"></div><span style="font-size:14px;color:#374151;line-height:1.5;">게스트 동반 10명 이내 (1인당 1만원)</span></div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-blue"></div><span style="font-size:14px;color:#374151;">음식물·음료 반입 가능</span></div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-blue"></div><span style="font-size:14px;color:#374151;">이용 시간: 오후 6시~10시 (3시간)</span></div>
+                </div>
+              </div>
+              <div class="card" style="border:1.5px solid rgba(218,150,22,0.3);">
+                <div style="background:linear-gradient(90deg,#DA9616,#e8a620);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;">
+                  <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:white;letter-spacing:1px;">VVIP</span>
+                  <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);">연회비 1,000,000원</span>
+                </div>
+                <div style="padding:14px 16px;display:flex;flex-direction:column;gap:7px;">
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-gold"></div><span style="font-size:14px;color:#374151;line-height:1.5;">VIP 모든 혜택 포함</span></div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-gold"></div><span style="font-size:14px;color:#374151;">단체 행사 공간 대여</span></div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;"><div class="dot-gold"></div><span style="font-size:14px;color:#374151;">무용·노래·악기 교육 50% 할인</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 운영시간 -->
+            <div style="padding:20px 18px;border-bottom:1px solid rgba(0,0,0,0.06);">
+              <p class="section-label" style="margin:0 0 12px;">운영 시간</p>
+              <div class="time-row"><span style="font-size:14px;color:#5D6B7A;font-weight:500;">일반 이용</span><span style="font-size:14px;font-weight:700;color:#0D1B3E;">매주 오후 6:00 ~ 10:00</span></div>
+              <div class="time-row" style="background:#FFF8E7;"><span style="font-size:14px;color:#5D6B7A;font-weight:500;">공간 대여 <span class="pill pill-gold" style="font-size:10px;padding:2px 7px;margin-left:4px;">VVIP</span></span><span style="font-size:14px;font-weight:700;color:#0D1B3E;">오전 10:00 ~ 오후 10:00</span></div>
+              <p style="margin:6px 0 0;font-size:12px;color:#98989b;">1회 3시간 단위 · 커피·음료 무료 제공</p>
+            </div>
+
+            <!-- 오시는 길 -->
+            <div style="padding:20px 18px;border-bottom:1px solid rgba(0,0,0,0.06);background:white;">
+              <p class="section-label" style="margin:0 0 12px;">오시는 길</p>
+              <div style="width:100%;height:180px;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+                <iframe src="{{ mapEmbedUrl }}" width="100%" height="180" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+              <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#0D1B3E;">{{ mapAddress }}</p>
+            </div>
+
+            <!-- Contact -->
+            <div style="padding:16px 18px;text-align:center;">
+              <p style="margin:0;font-size:13px;color:#98989b;line-height:1.9;">이용 문의<br><strong style="color:#5D6B7A;font-size:14px;">김지현 사무국장 010-4245-5871</strong><br><strong style="color:#5D6B7A;font-size:14px;">윤형관 사무총장 010-5495-6465</strong></p>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div style="flex:none;display:flex;border-top:1px solid rgba(0,0,0,0.08);background:white;">
+            <button onClick="{{ goLoginForSignup }}" style="flex:1;height:56px;background:white;border:none;border-right:1px solid rgba(0,0,0,0.08);cursor:pointer;font-size:16px;font-weight:700;color:#1F3A7A;">회원가입하기</button>
+            <button onClick="{{ goLoginForReservation }}" style="flex:1;height:56px;background:#1F3A7A;border:none;cursor:pointer;font-size:16px;font-weight:700;color:white;">예약하기</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== LOGIN ===== -->
+      <sc-if value="{{ isLogin }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><button onClick="{{ goBack }}" class="back-btn">‹</button><h2 class="hdr-title">로그인</h2><div style="width:40px;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 24px;">
+            <div class="card" style="padding:24px;margin-bottom:20px;">
+              <p class="section-label" style="margin:0 0 4px;">{{ loginContextLabel }}</p>
+              <p style="margin:0 0 22px;font-size:17px;font-weight:700;color:#0D1B3E;line-height:1.4;">{{ loginContextTitle }}</p>
+              <button onClick="{{ loginAsNew }}" style="width:100%;height:52px;background:#FEE500;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-size:16px;font-weight:700;color:#191919;margin-bottom:10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.5 3 2 6.5 2 10.8c0 2.7 1.6 5.1 4.1 6.6L5.1 21l4.4-2.9c.8.1 1.6.2 2.5.2 5.5 0 10-3.5 10-7.5S17.5 3 12 3z"/></svg>
+                카카오로 로그인
+              </button>
+              <button onClick="{{ loginAsNew }}" style="width:100%;height:52px;background:white;border:1.5px solid #E2E8F0;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-size:16px;font-weight:500;color:#0D1B3E;margin-bottom:18px;">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z" fill="#4285F4"/><path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04c-.72.48-1.63.76-2.7.76-2.08 0-3.84-1.4-4.48-3.29H1.87v2.07A8 8 0 0 0 8.98 17z" fill="#34A853"/><path d="M4.5 10.49c-.16-.48-.25-1-.25-1.49s.09-1.01.25-1.49V5.44H1.87a8 8 0 0 0 0 7.12l2.63-2.07z" fill="#FBBC04"/><path d="M8.98 3.72c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.87 5.44l2.63 2.06C5.14 5.12 6.9 3.72 8.98 3.72z" fill="#EA4335"/></svg>
+                구글로 로그인
+              </button>
+              <div style="display:flex;gap:8px;">
+                <button onClick="{{ loginAsNew }}" style="flex:1;height:40px;background:#F4F6FA;border:none;border-radius:8px;cursor:pointer;font-size:12px;color:#5D6B7A;line-height:1.4;">신규 회원<br>체험</button>
+                <button onClick="{{ loginAsExisting }}" style="flex:1;height:40px;background:#F4F6FA;border:none;border-radius:8px;cursor:pointer;font-size:12px;color:#5D6B7A;line-height:1.4;">기존 회원<br>체험</button>
+              </div>
+            </div>
+            <p style="margin:0;text-align:center;font-size:12px;color:#98989b;">사무국장 010-4245-5871</p>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== SIGNUP ===== -->
+      <sc-if value="{{ isSignup }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><button onClick="{{ goBack }}" class="back-btn">‹</button><h2 class="hdr-title">가입 신청서</h2><div style="width:40px;"></div></div>
+          <div style="flex:1;overflow-y:auto;padding:20px;">
+            <div style="margin-bottom:18px;"><label class="field-label">이름 <span style="color:#e53e3e;">*</span></label><input class="inp" type="text" value="{{ name }}" onChange="{{ setName }}" placeholder="실명을 입력해 주세요" /></div>
+            <div style="margin-bottom:18px;"><label class="field-label">휴대폰 번호 <span style="color:#e53e3e;">*</span></label><input class="inp" type="tel" value="{{ phone }}" onChange="{{ setPhone }}" placeholder="010-0000-0000" /></div>
+            <div style="margin-bottom:18px;">
+              <label class="field-label">희망 등급 <span style="color:#e53e3e;">*</span></label>
+              <div style="display:flex;gap:10px;">
+                <button onClick="{{ setGradeVIP }}" style="{{ gradeVIPStyle }}">VIP</button>
+                <button onClick="{{ setGradeVVIP }}" style="{{ gradeVVIPStyle }}">VVIP</button>
+              </div>
+              <p style="margin:7px 0 0;font-size:12px;color:#98989b;">VVIP: 공간 대여 등 추가 혜택 포함</p>
+            </div>
+            <div style="margin-bottom:18px;">
+              <label class="field-label">관심 분야 <span style="color:#98989b;font-weight:400;">(선택)</span></label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button onClick="{{ toggleDance }}" style="{{ chipDanceStyle }}">무용</button>
+                <button onClick="{{ toggleSing }}" style="{{ chipSingStyle }}">노래</button>
+                <button onClick="{{ toggleInst }}" style="{{ chipInstStyle }}">악기</button>
+                <button onClick="{{ toggleEtc }}" style="{{ chipEtcStyle }}">기타</button>
+              </div>
+            </div>
+            <div class="card" style="padding:14px 16px;margin-bottom:4px;">
+              <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+                <input type="checkbox" checked="{{ agreed }}" onChange="{{ toggleAgreed }}" style="width:20px;height:20px;margin-top:1px;accent-color:#1F3A7A;cursor:pointer;flex:none;" />
+                <span style="font-size:14px;color:#374151;line-height:1.6;">개인정보 수집·이용에 동의합니다 <span style="color:#e53e3e;">*</span><br><span style="color:#98989b;font-size:12px;">수집 항목: 이름, 휴대폰 번호, 관심 분야</span></span>
+              </label>
+            </div>
+          </div>
+          <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(0,0,0,0.06);background:white;"><button class="pri-btn" onClick="{{ goWaiting }}">신청하기</button></div>
+        </div>
+      </sc-if>
+
+      <!-- ===== WAITING ===== -->
+      <sc-if value="{{ isWaiting }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><h2 class="hdr-title" style="text-align:left;">신청 현황</h2></div>
+          <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;">
+            <div class="card" style="padding:20px;animation:fadeUp .4s ease;">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                <div><p class="section-label" style="margin:0 0 2px;">STATUS</p><p style="margin:0;font-size:17px;font-weight:700;color:#0D1B3E;">심사 대기 중</p></div>
+              </div>
+              <p style="margin:0;font-size:15px;color:#5D6B7A;line-height:1.7;">가입 신청이 접수되었습니다.<br>운영위원회 승인 후 이용하실 수 있습니다.</p>
+            </div>
+            <div class="card" style="overflow:hidden;">
+              <div style="padding:13px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;"><div style="width:26px;height:26px;border-radius:100px;background:#1F3A7A;display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-size:13px;font-weight:700;color:white;">1</span></div><div><p style="margin:0;font-size:14px;font-weight:700;color:#1F3A7A;">대기 중</p><p style="margin:2px 0 0;font-size:11px;color:#98989b;">현재 단계</p></div></div>
+              <div style="padding:13px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;opacity:.35;"><div style="width:26px;height:26px;border-radius:100px;border:1.5px solid #E2E8F0;display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-size:13px;font-weight:700;color:#98989b;">2</span></div><p style="margin:0;font-size:14px;font-weight:500;color:#0D1B3E;">운영위원회 승인</p></div>
+              <div style="padding:13px 16px;display:flex;align-items:center;gap:12px;opacity:.35;"><div style="width:26px;height:26px;border-radius:100px;border:1.5px solid #E2E8F0;display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-size:13px;font-weight:700;color:#98989b;">3</span></div><p style="margin:0;font-size:14px;font-weight:500;color:#0D1B3E;">서비스 이용 시작</p></div>
+            </div>
+            <div class="card" style="overflow:hidden;">
+              <div style="background:#1F3A7A;padding:13px 16px;border-radius:14px 14px 0 0;"><p class="section-label" style="margin:0 0 2px;color:rgba(255,255,255,0.5);">TIP</p><p style="margin:0;font-size:14px;font-weight:700;color:white;">홈 화면에 추가하면 편리해요</p></div>
+              <div style="padding:13px 16px;border-bottom:1px solid rgba(0,0,0,0.06);"><p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#0D1B3E;">아이폰 (Safari)</p><p style="margin:0;font-size:13px;color:#5D6B7A;">하단 공유 버튼 → 홈 화면에 추가</p></div>
+              <div style="padding:13px 16px;"><p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#0D1B3E;">안드로이드 (Chrome)</p><p style="margin:0;font-size:13px;color:#5D6B7A;">우상단 메뉴(⋮) → 홈 화면에 추가</p></div>
+            </div>
+          </div>
+          <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(0,0,0,0.06);background:white;"><button class="green-btn" onClick="{{ goApproved }}">승인 완료 — 체험하기 →</button></div>
+        </div>
+      </sc-if>
+
+      <!-- ===== HOME ===== -->
+      <sc-if value="{{ isHome }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div style="flex:none;background:linear-gradient(160deg,#152B5C,#1F3A7A);padding:20px 18px 22px;">
+            <p class="section-label" style="margin:0 0 6px;color:rgba(255,255,255,0.45);">안녕하세요</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <h2 style="margin:0;font-size:26px;font-weight:900;color:white;">{{ demoName }}님</h2>
+              <span style="{{ gradeBadgeStyle }}">{{ demoGrade }}</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:13px;color:rgba(255,255,255,0.55);">연회비 만료일</span>
+              <span style="font-size:13px;font-weight:700;color:white;">2026년 12월 31일</span>
+            </div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px;">
+            <p class="section-label" style="margin:0;">바로가기</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <button onClick="{{ goReservation }}" style="background:white;border:none;border-radius:14px;padding:18px 14px;cursor:pointer;text-align:left;box-shadow:0 2px 10px rgba(13,27,62,0.08);display:flex;flex-direction:column;gap:12px;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#EBF0FF;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F3A7A" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                <span style="font-size:15px;font-weight:700;color:#0D1B3E;">예약하기</span>
+              </button>
+              <button onClick="{{ goReservations }}" style="background:white;border:none;border-radius:14px;padding:18px 14px;cursor:pointer;text-align:left;box-shadow:0 2px 10px rgba(13,27,62,0.08);display:flex;flex-direction:column;gap:12px;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#F0F0F0;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.8" stroke-linecap="round"><path d="M9 12h6M9 8h6M9 16h4M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></div>
+                <span style="font-size:15px;font-weight:700;color:#0D1B3E;">예약 내역</span>
+              </button>
+            </div>
+            <!-- Upcoming res preview -->
+            <div class="card" style="padding:16px;">
+              <p class="section-label" style="margin:0 0 10px;">다가오는 예약</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:16px;font-weight:700;color:#0D1B3E;">9월 20일 (토)</span><span class="status-ok">확정</span></div>
+              <span style="font-size:14px;color:#5D6B7A;">오후 6:00 ~ 9:00 · 게스트 2명</span>
+            </div>
+            <!-- Demo toggle -->
+            <div class="card" style="padding:13px 14px;display:flex;align-items:center;justify-content:space-between;">
+              <div><p class="section-label" style="margin:0 0 1px;">DEMO</p><p style="margin:0;font-size:14px;font-weight:600;color:#0D1B3E;">등급 전환 (현재: {{ demoGrade }})</p></div>
+              <button onClick="{{ toggleDemoGrade }}" style="height:34px;padding:0 14px;background:#F4F6FA;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#5D6B7A;">전환</button>
+            </div>
+          </div>
+          <div class="nav-bar">
+            <button class="nav-btn" onClick="{{ goHome }}" style="{{ navHomeStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</button>
+            <button class="nav-btn" onClick="{{ goReservations }}" style="{{ navResStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</button>
+            <button class="nav-btn" onClick="{{ goMyInfo }}" style="{{ navMyInfoStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== RESERVATION ===== -->
+      <sc-if value="{{ isReservation }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><button class="back-btn" onClick="{{ goBack }}">‹</button><h2 class="hdr-title">예약하기</h2><div style="width:40px;"></div></div>
+          <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:18px;">
+            <div><label class="field-label">날짜 선택</label><input class="inp" type="date" value="{{ resDate }}" onChange="{{ setResDate }}" /></div>
+            <div>
+              <label class="field-label">이용 시간 <span style="font-weight:400;color:#98989b;">— 1회 3시간</span></label>
+              <button onClick="{{ selectTime1 }}" style="{{ timeSlot1Style }}">오후 6:00 ~ 오후 9:00</button>
+              <button onClick="{{ selectTime2 }}" style="{{ timeSlot2Style }}">오후 7:00 ~ 오후 10:00</button>
+            </div>
+            <div>
+              <label class="field-label">게스트 동반 <span style="font-weight:400;color:#98989b;">— 1인당 1만원 · 최대 10명</span></label>
+              <div style="display:flex;align-items:center;border:1.5px solid #E2E8F0;border-radius:10px;background:white;height:52px;overflow:hidden;">
+                <button onClick="{{ removeGuest }}" style="width:52px;height:100%;background:#F4F6FA;border:none;border-right:1px solid #E2E8F0;cursor:pointer;font-size:22px;color:#0D1B3E;display:flex;align-items:center;justify-content:center;">−</button>
+                <div style="flex:1;text-align:center;font-size:20px;font-weight:700;color:#0D1B3E;">{{ resGuests }}명</div>
+                <button onClick="{{ addGuest }}" style="width:52px;height:100%;background:#F4F6FA;border:none;border-left:1px solid #E2E8F0;cursor:pointer;font-size:22px;color:#0D1B3E;display:flex;align-items:center;justify-content:center;">+</button>
+              </div>
+            </div>
+            <sc-if value="{{ showSpaceRental }}">
+              <div style="padding:14px 16px;border-radius:10px;border:1.5px solid rgba(218,150,22,0.3);background:#FFF8E7;display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:5px;height:5px;border-radius:50%;background:#DA9616;flex:none;margin-top:8px;"></div>
+                <div><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#0D1B3E;">단체 행사 / 공간 대여 <span class="pill pill-gold" style="font-size:10px;padding:2px 7px;vertical-align:middle;">VVIP</span></p><p style="margin:0;font-size:12px;color:#98989b;">오전 10:00 ~ 오후 10:00 · 010-4245-5871</p></div>
+              </div>
+            </sc-if>
+            <div class="card" style="padding:16px;">
+              <p class="section-label" style="margin:0 0 12px;">예약 요약</p>
+              <div style="display:flex;justify-content:space-between;margin-bottom:9px;"><span style="font-size:14px;color:#5D6B7A;">날짜</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">{{ resDateDisplay }}</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:9px;"><span style="font-size:14px;color:#5D6B7A;">시간</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">{{ resTimeDisplay }}</span></div>
+              <div style="height:1px;background:#E2E8F0;margin:10px 0;"></div>
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;color:#5D6B7A;">게스트 이용료</span><span style="font-size:14px;font-weight:700;color:#1F3A7A;">{{ resGuestCostText }}</span></div>
+            </div>
+          </div>
+          <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(0,0,0,0.06);background:white;"><button class="pri-btn" onClick="{{ goConfirm }}">예약 신청</button></div>
+        </div>
+      </sc-if>
+
+      <!-- ===== CONFIRMATION ===== -->
+      <sc-if value="{{ isConfirm }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><h2 class="hdr-title" style="text-align:left;">예약 신청 완료</h2></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;">
+            <div style="width:72px;height:72px;border-radius:16px;background:#ECFDF5;display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation:checkPop .5s ease;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a7a4a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#0D1B3E;text-align:center;">예약이 신청되었습니다</h3>
+            <p style="margin:0 0 24px;font-size:15px;color:#5D6B7A;text-align:center;line-height:1.6;">담당자 확인 후 예약이 확정됩니다.</p>
+            <div class="card" style="width:100%;padding:16px;margin-bottom:24px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5D6B7A;">날짜</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">{{ resDateDisplay }}</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5D6B7A;">시간</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">{{ resTimeDisplay }}</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5D6B7A;">게스트</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">{{ resGuests }}명</span></div>
+              <div style="height:1px;background:#E2E8F0;margin:4px 0 10px;"></div>
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;color:#5D6B7A;">게스트 이용료</span><span style="font-size:14px;font-weight:700;color:#1F3A7A;">{{ resGuestCostText }}</span></div>
+            </div>
+          </div>
+          <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(0,0,0,0.06);background:white;"><button class="pri-btn" onClick="{{ goHome }}">홈으로</button></div>
+        </div>
+      </sc-if>
+
+      <!-- ===== RESERVATIONS ===== -->
+      <sc-if value="{{ isReservations }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><h2 class="hdr-title" style="text-align:left;">예약 내역</h2></div>
+          <div style="flex:1;overflow-y:auto;padding:18px 16px;">
+            <p class="section-label" style="margin:0 0 10px;">다가오는 예약</p>
+            <sc-for list="{{ upcomingRes }}" as="item" hint-placeholder-count="1">
+              <div class="card" style="padding:16px;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:16px;font-weight:700;color:#0D1B3E;">{{ item.date }}</span><span style="{{ item.statusStyle }}">{{ item.status }}</span></div>
+                <p style="margin:0 0 2px;font-size:14px;color:#5D6B7A;">{{ item.time }}</p>
+                <p style="margin:0;font-size:12px;color:#98989b;">{{ item.guestDisplay }}</p>
+              </div>
+            </sc-for>
+            <p class="section-label" style="margin:16px 0 10px;">지난 예약</p>
+            <sc-for list="{{ pastRes }}" as="item" hint-placeholder-count="1">
+              <div class="card" style="padding:16px;margin-bottom:10px;opacity:.6;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:16px;font-weight:700;color:#0D1B3E;">{{ item.date }}</span><span style="{{ item.statusStyle }}">{{ item.status }}</span></div>
+                <p style="margin:0;font-size:14px;color:#5D6B7A;">{{ item.time }}</p>
+              </div>
+            </sc-for>
+          </div>
+          <div class="nav-bar">
+            <button class="nav-btn" onClick="{{ goHome }}" style="{{ navHomeStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</button>
+            <button class="nav-btn" onClick="{{ goReservations }}" style="{{ navResStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</button>
+            <button class="nav-btn" onClick="{{ goMyInfo }}" style="{{ navMyInfoStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== MY INFO ===== -->
+      <sc-if value="{{ isMyInfo }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><h2 class="hdr-title" style="text-align:left;">내 정보</h2></div>
+          <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;">
+            <div style="background:linear-gradient(150deg,#152B5C,#1F3A7A);border-radius:16px;padding:20px;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+                <div><p class="section-label" style="margin:0 0 4px;color:rgba(255,255,255,0.4);">MEMBER</p><h3 style="margin:0;font-size:26px;font-weight:900;color:white;">{{ demoName }}</h3></div>
+                <span style="{{ gradeBadgeStyle }}">{{ demoGrade }}</span>
+              </div>
+              <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.5);">010-4245-5871</p>
+            </div>
+            <div class="card">
+              <div style="padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#5D6B7A;">회원 등급</span><span style="font-size:14px;font-weight:700;color:#0D1B3E;">{{ demoGrade }}</span></div>
+              <div style="padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#5D6B7A;">연회비 만료일</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">2026년 12월 31일</span></div>
+              <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#5D6B7A;">관심 분야</span><span style="font-size:14px;font-weight:600;color:#0D1B3E;">무용, 노래</span></div>
+            </div>
+            <div class="card" style="padding:13px 14px;display:flex;align-items:center;justify-content:space-between;">
+              <div><p class="section-label" style="margin:0 0 1px;">DEMO</p><p style="margin:0;font-size:14px;font-weight:600;color:#0D1B3E;">등급 전환 (현재: {{ demoGrade }})</p></div>
+              <button onClick="{{ toggleDemoGrade }}" style="height:34px;padding:0 14px;background:#F4F6FA;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#5D6B7A;">전환</button>
+            </div>
+          </div>
+          <div class="nav-bar">
+            <button class="nav-btn" onClick="{{ goHome }}" style="{{ navHomeStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</button>
+            <button class="nav-btn" onClick="{{ goReservations }}" style="{{ navResStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</button>
+            <button class="nav-btn" onClick="{{ goMyInfo }}" style="{{ navMyInfoStyle }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== ADMIN HOME ===== -->
+      <sc-if value="{{ isAdmin }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#F8F9FC;">
+          <div class="hdr"><button class="back-btn" onClick="{{ goBack }}">‹</button><h2 class="hdr-title">관리자 홈</h2><div style="background:#1F3A7A;padding:3px 10px;border-radius:100px;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:white;letter-spacing:1px;">ADMIN</span></div></div>
+          <div style="flex:1;overflow-y:auto;padding:18px 16px;">
+            <p class="section-label" style="margin:0 0 12px;">관리 메뉴</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="card" style="padding:18px 14px;position:relative;cursor:pointer;">
+                <div style="position:absolute;top:14px;right:14px;background:#e53e3e;min-width:20px;height:20px;border-radius:100px;display:flex;align-items:center;justify-content:center;padding:0 5px;"><span style="font-size:11px;font-weight:700;color:white;">3</span></div>
+                <div style="width:40px;height:40px;border-radius:10px;background:#EBF0FF;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F3A7A" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0D1B3E;">가입 승인</p>
+              </div>
+              <div class="card" style="padding:18px 14px;cursor:pointer;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a7a4a" stroke-width="1.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0D1B3E;">대신 등록</p>
+              </div>
+              <div class="card" style="padding:18px 14px;cursor:pointer;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#FFFBEB;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DA9616" stroke-width="1.5" stroke-linecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0D1B3E;">회비 관리</p>
+              </div>
+              <div class="card" style="padding:18px 14px;cursor:pointer;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#F0F0F0;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0D1B3E;">예약 현황</p>
+              </div>
+              <div class="card" style="padding:14px;cursor:pointer;grid-column:1/-1;display:flex;align-items:center;gap:14px;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#FAF0FF;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0D1B3E;">게스트 정산</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div><!-- end content area -->
+    <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,0.22);border-radius:3px;"></div>
+  </div>
+
+  <div style="font-size:11px;color:rgba(255,255,255,0.18);text-align:center;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">랜딩 화면의 버튼으로 시작하세요</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;mapAddress&quot;: {
+    &quot;editor&quot;: &quot;text&quot;,
+    &quot;default&quot;: &quot;서울특별시 강서구 개화동로27가길 33 (방화동) 지하2층&quot;,
+    &quot;section&quot;: &quot;오시는 길&quot;
+  }
+}">
+class Component extends DCLogic {
+  state = {
+    screen: 'landing',
+    loginIntent: 'signup',
+    mapAddress: '서울특별시 강서구 개화동로27가길 33 (방화동) 지하2층',
+    name: '', phone: '', grade: '', interests: [], agreed: false,
+    resDate: '', resTime: '', resGuests: 0,
+    demoName: '홍길동', demoGrade: 'VVIP',
+  };
+
+  navigate(s) { this.setState({ screen: s }); }
+
+  toggleInterest(i) {
+    const arr = this.state.interests;
+    this.setState({ interests: arr.includes(i) ? arr.filter(x => x !== i) : [...arr, i] });
+  }
+
+  scrollImg(dir) {
+    const el = document.getElementById('space-scroll');
+    if (el) el.scrollBy({ left: dir * 320, behavior: 'smooth' });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const g = s.demoGrade;
+
+    const chip = active => ({
+      height: 44, paddingLeft: 18, paddingRight: 18, borderRadius: 100,
+      border: `1.5px solid ${active ? '#1F3A7A' : '#E2E8F0'}`,
+      background: active ? '#EBF0FF' : 'white',
+      color: active ? '#1F3A7A' : '#5D6B7A',
+      fontFamily: "'Pretendard', sans-serif", fontSize: 15,
+      fontWeight: active ? 700 : 400, cursor: 'pointer',
+    });
+
+    const timeBtn = active => ({
+      width: '100%', height: 52, borderRadius: 10,
+      border: `1.5px solid ${active ? '#1F3A7A' : '#E2E8F0'}`,
+      background: active ? '#1F3A7A' : 'white',
+      cursor: 'pointer', fontFamily: "'Pretendard', sans-serif",
+      fontSize: 16, color: active ? 'white' : '#0D1B3E',
+      fontWeight: active ? 700 : 400, marginBottom: 8, textAlign: 'center',
+    });
+
+    const navTab = active => ({
+      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', gap: 3, background: 'none', border: 'none',
+      cursor: 'pointer', padding: '6px 0',
+      color: active ? '#1F3A7A' : '#98989b',
+      fontFamily: "'Pretendard', sans-serif",
+      fontSize: 11, fontWeight: active ? 700 : 400,
+    });
+
+    const gradeBtn = (active, color) => ({
+      flex: 1, height: 52, borderRadius: 10,
+      border: `1.5px solid ${active ? color : '#E2E8F0'}`,
+      background: active ? color : 'white',
+      color: active ? 'white' : '#5D6B7A',
+      fontFamily: "'Barlow Condensed', 'Pretendard', sans-serif",
+      fontSize: 20, fontWeight: 700, cursor: 'pointer', letterSpacing: '1px',
+    });
+
+    const resGuestCost = s.resGuests * 10000;
+
+    const formatDate = d => {
+      if (!d) return '날짜를 선택해 주세요';
+      const [y, m, day] = d.split('-');
+      return `${y}년 ${parseInt(m)}월 ${parseInt(day)}일`;
+    };
+
+    const makeRes = r => ({
+      ...r,
+      guestDisplay: r.guests > 0 ? `게스트 ${r.guests}명 동반` : '게스트 없음',
+      statusStyle: {
+        display: 'inline-block', padding: '3px 12px', borderRadius: 100,
+        fontSize: 12, fontWeight: 700,
+        color: r.status === '확정' ? '#1F3A7A' : '#5d5d60',
+        background: r.status === '확정' ? '#EBF0FF' : '#F0F0F0',
+      },
+    });
+
+    return {
+      isLanding: s.screen === 'landing',
+      isLogin: s.screen === 'login',
+      isSignup: s.screen === 'signup',
+      isWaiting: s.screen === 'waiting',
+      isHome: s.screen === 'home',
+      isReservation: s.screen === 'reservation',
+      isConfirm: s.screen === 'confirm',
+      isReservations: s.screen === 'reservations',
+      isMyInfo: s.screen === 'myinfo',
+      isAdmin: s.screen === 'admin',
+
+      goLoginForSignup: () => this.setState({ screen: 'login', loginIntent: 'signup' }),
+      goLoginForReservation: () => this.setState({ screen: 'login', loginIntent: 'reservation' }),
+      loginAsNew: () => this.navigate('signup'),
+      loginAsExisting: () => s.loginIntent === 'reservation' ? this.navigate('reservation') : this.navigate('home'),
+      goToAdmin: () => this.navigate('admin'),
+      goBack: () => {
+        const map = { login:'landing', signup:'landing', waiting:'landing', reservation:'home', confirm:'home', reservations:'home', myinfo:'home', admin:'landing' };
+        this.navigate(map[s.screen] || 'landing');
+      },
+      goHome: () => this.navigate('home'),
+      goReservation: () => this.navigate('reservation'),
+      goReservations: () => this.navigate('reservations'),
+      goMyInfo: () => this.navigate('myinfo'),
+      goConfirm: () => { if (!s.resDate || !s.resTime) return alert('날짜와 시간을 선택해 주세요.'); this.navigate('confirm'); },
+      goWaiting: () => { if (!s.name || !s.phone || !s.grade || !s.agreed) return alert('필수 항목을 모두 입력해 주세요.'); this.navigate('waiting'); },
+      goApproved: () => this.navigate('home'),
+      loginContextLabel: s.loginIntent === 'reservation' ? 'RESERVATION' : 'MEMBERSHIP',
+      loginContextTitle: s.loginIntent === 'reservation' ? '예약을 위해 로그인해 주세요' : '가입 신청을 위해 로그인해 주세요',
+
+      name: s.name, phone: s.phone, agreed: s.agreed,
+      setName: e => this.setState({ name: e.target.value }),
+      setPhone: e => this.setState({ phone: e.target.value }),
+      toggleAgreed: () => this.setState({ agreed: !s.agreed }),
+      setGradeVIP: () => this.setState({ grade: 'VIP' }),
+      setGradeVVIP: () => this.setState({ grade: 'VVIP' }),
+      gradeVIPStyle: gradeBtn(s.grade === 'VIP', '#1F3A7A'),
+      gradeVVIPStyle: gradeBtn(s.grade === 'VVIP', '#DA9616'),
+      chipDanceStyle: chip(s.interests.includes('무용')),
+      chipSingStyle: chip(s.interests.includes('노래')),
+      chipInstStyle: chip(s.interests.includes('악기')),
+      chipEtcStyle: chip(s.interests.includes('기타')),
+      toggleDance: () => this.toggleInterest('무용'),
+      toggleSing: () => this.toggleInterest('노래'),
+      toggleInst: () => this.toggleInterest('악기'),
+      toggleEtc: () => this.toggleInterest('기타'),
+
+      resDate: s.resDate, resTime: s.resTime, resGuests: s.resGuests,
+      setResDate: e => this.setState({ resDate: e.target.value }),
+      addGuest: () => this.setState({ resGuests: Math.min(10, s.resGuests + 1) }),
+      removeGuest: () => this.setState({ resGuests: Math.max(0, s.resGuests - 1) }),
+      selectTime1: () => this.setState({ resTime: '오후 6:00 ~ 오후 9:00' }),
+      selectTime2: () => this.setState({ resTime: '오후 7:00 ~ 오후 10:00' }),
+      timeSlot1Style: timeBtn(s.resTime === '오후 6:00 ~ 오후 9:00'),
+      timeSlot2Style: timeBtn(s.resTime === '오후 7:00 ~ 오후 10:00'),
+      showSpaceRental: g === 'VVIP',
+      resGuestCostText: resGuestCost ? `${resGuestCost.toLocaleString()}원` : '없음',
+      resDateDisplay: formatDate(s.resDate),
+      resTimeDisplay: s.resTime || '시간을 선택해 주세요',
+
+      mapAddress: this.props.mapAddress ?? s.mapAddress,
+      mapEmbedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(this.props.mapAddress ?? s.mapAddress)}&output=embed&hl=ko`,
+
+      demoName: s.demoName, demoGrade: g,
+      gradeBadgeStyle: {
+        display: 'inline-flex', alignItems: 'center', padding: '4px 14px',
+        borderRadius: 100, fontSize: 12, fontWeight: 700, letterSpacing: '.5px',
+        background: g === 'VVIP' ? '#DA9616' : '#1F3A7A',
+        color: 'white',
+      },
+      toggleDemoGrade: () => this.setState({ demoGrade: g === 'VIP' ? 'VVIP' : 'VIP' }),
+
+      navHomeStyle: navTab(s.screen === 'home'),
+      navResStyle: navTab(s.screen === 'reservations'),
+      navMyInfoStyle: navTab(s.screen === 'myinfo'),
+
+      upcomingRes: [makeRes({ date: '2026년 9월 20일', time: '오후 6:00 ~ 오후 9:00', status: '확정', guests: 2 })],
+      pastRes: [makeRes({ date: '2026년 8월 15일', time: '오후 6:00 ~ 오후 9:00', status: '완료', guests: 0 })],
+    };
+  }
+}
+</script>
+</body>
+</html>

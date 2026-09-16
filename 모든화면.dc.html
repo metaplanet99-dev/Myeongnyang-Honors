@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Noto Sans KR','Barlow',system-ui,sans-serif; background: #0d1a2e; }
+    ::-webkit-scrollbar { display:none; }
+    .bc { font-family:'Barlow Condensed','Noto Sans KR',sans-serif; }
+    .pf { width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative; box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06); overflow:hidden; flex:none; }
+    .di { position:absolute;top:12px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:22px;z-index:50; }
+    .sb { position:absolute;top:0;left:0;right:0;height:59px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 10px;z-index:40;pointer-events:none; }
+    .ca { position:absolute;top:59px;left:0;right:0;bottom:34px;overflow:hidden; }
+    .hi { position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,0.22);border-radius:3px; }
+    .hdr { flex:none;height:56px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid rgba(29,31,32,0.12);background:white; }
+    .nav-bar { flex:none;height:58px;display:flex;background:white;border-top:1px solid rgba(29,31,32,0.1); }
+    .nav-btn { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif; }
+    .tag-out { display:inline-block;padding:2px 8px;border:1px solid rgba(29,31,32,0.2);font-size:11px;font-weight:600;color:#5d5d60;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px; }
+    .tag-navy { display:inline-block;padding:2px 8px;border:1px solid #1F3A7A;font-size:11px;font-weight:600;color:#1F3A7A;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px; }
+    .pri-btn { width:100%;height:52px;background:#1F3A7A;border:none;cursor:pointer;font-size:17px;font-weight:700;color:white;border-radius:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;letter-spacing:.5px; }
+    .green-btn { width:100%;height:52px;background:#2d6a4f;border:none;cursor:pointer;font-size:16px;font-weight:700;color:white;border-radius:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;letter-spacing:.5px; }
+    .inp { width:100%;height:52px;border:1px solid rgba(29,31,32,0.2);border-radius:0;padding:0 14px;font-size:16px;color:#1d1f20;background:white;outline:none; }
+    .field-label { display:block;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;color:#5d5d60;margin-bottom:7px; }
+    .card-row { display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(29,31,32,0.08); }
+    .corner-tl { position:absolute;top:-3px;left:-3px;width:8px;height:8px;border-top:1px solid #1F3A7A;border-left:1px solid #1F3A7A; }
+    .corner-tr { position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-top:1px solid #1F3A7A;border-right:1px solid #1F3A7A; }
+    .corner-bl { position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border-bottom:1px solid #1F3A7A;border-left:1px solid #1F3A7A; }
+    .corner-br { position:absolute;bottom:-3px;right:-3px;width:8px;height:8px;border-bottom:1px solid #1F3A7A;border-right:1px solid #1F3A7A; }
+  </style>
+</helmet>
+
+<div style="padding:48px 48px 64px; min-width:1400px;">
+
+  <!-- Header -->
+  <div style="margin-bottom:40px;">
+    <p style="margin:0 0 6px; font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.3); font-weight:600;">MYEONGNYANGONORS CLUB</p>
+    <h1 style="margin:0; font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:700; color:white; letter-spacing:1px;">회원 앱 — 전체 화면 개요</h1>
+    <p style="margin:8px 0 0; font-size:14px; color:rgba(255,255,255,0.35);">9개 화면 · 회원 플로우 + 운영진 홈</p>
+  </div>
+
+  <!-- Row 1: 랜딩 → 가입 → 대기 -->
+  <div style="margin-bottom:60px;">
+    <p style="margin:0 0 16px; font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.3); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">가입 플로우</p>
+    <div style="display:flex; gap:28px; align-items:flex-start;">
+
+      <!-- 1. Landing -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:linear-gradient(175deg,#152B5C 0%,#1F3A7A 55%,#1a4060 100%); position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span><div style="display:flex;gap:6px;align-items:center;"><svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M7.5 9.5a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1z" fill="white" stroke="none"/><path d="M4 6.5a4.9 4.9 0 0 1 7 0"/><path d="M1 3.5a9 9 0 0 1 13 0"/></svg><div style="width:22px;height:11px;border:1.5px solid rgba(255,255,255,0.75);border-radius:2px;padding:1.5px;display:flex;align-items:center;"><div style="width:70%;height:100%;background:white;border-radius:1px;"></div></div></div></div>
+            <div class="ca" style="background:linear-gradient(175deg,#152B5C 0%,#1F3A7A 55%,#1a4060 100%); display:flex; flex-direction:column; overflow-y:hidden;">
+              <!-- Logo -->
+              <div style="display:flex;flex-direction:column;align-items:center;padding:40px 28px 0;gap:16px;">
+                <div style="position:relative;width:88px;height:88px;">
+                  <span style="position:absolute;top:-4px;left:-4px;width:12px;height:12px;border-top:1.5px solid rgba(200,164,74,0.6);border-left:1.5px solid rgba(200,164,74,0.6);"></span>
+                  <span style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-top:1.5px solid rgba(200,164,74,0.6);border-right:1.5px solid rgba(200,164,74,0.6);"></span>
+                  <span style="position:absolute;bottom:-4px;left:-4px;width:12px;height:12px;border-bottom:1.5px solid rgba(200,164,74,0.6);border-left:1.5px solid rgba(200,164,74,0.6);"></span>
+                  <span style="position:absolute;bottom:-4px;right:-4px;width:12px;height:12px;border-bottom:1.5px solid rgba(200,164,74,0.6);border-right:1.5px solid rgba(200,164,74,0.6);"></span>
+                  <div style="width:88px;height:88px;border:1px solid rgba(200,164,74,0.35);display:flex;align-items:center;justify-content:center;background:rgba(200,164,74,0.06);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:700;color:#C8A44A;">명</span></div>
+                </div>
+                <div style="text-align:center;"><h1 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:26px;font-weight:700;color:white;letter-spacing:1px;">명량아너스클럽</h1><p style="margin:5px 0 0;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:2.5px;color:rgba(255,255,255,0.35);">MEMBERS ONLY</p></div>
+              </div>
+              <div style="flex:1;"></div>
+              <div style="padding:0 24px 24px;">
+                <div style="position:relative;border:1px solid rgba(255,255,255,0.12);padding:20px;background:rgba(255,255,255,0.04);">
+                  <span style="position:absolute;top:-4px;left:-4px;width:10px;height:10px;border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.3);"></span>
+                  <span style="position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-top:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"></span>
+                  <span style="position:absolute;bottom:-4px;left:-4px;width:10px;height:10px;border-bottom:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.3);"></span>
+                  <span style="position:absolute;bottom:-4px;right:-4px;width:10px;height:10px;border-bottom:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"></span>
+                  <p style="margin:0 0 14px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);font-weight:600;">소셜 계정으로 로그인</p>
+                  <div style="width:100%;height:52px;background:#FEE500;display:flex;align-items:center;justify-content:center;gap:9px;font-size:16px;font-weight:700;color:#191919;margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.5 3 2 6.5 2 10.8c0 2.7 1.6 5.1 4.1 6.6L5.1 21l4.4-2.9c.8.1 1.6.2 2.5.2 5.5 0 10-3.5 10-7.5S17.5 3 12 3z"/></svg>카카오로 로그인</div>
+                  <div style="width:100%;height:52px;background:white;border:1px solid rgba(29,31,32,0.12);display:flex;align-items:center;justify-content:center;gap:9px;font-size:16px;font-weight:500;color:#1d1f20;margin-bottom:14px;"><span style="font-weight:800;font-size:16px;color:#4285F4;">G</span>구글로 로그인</div>
+                  <div style="display:flex;gap:8px;"><div style="flex:1;height:40px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,0.5);">신규 회원 체험</div><div style="flex:1;height:40px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,0.5);">기존 회원 체험</div></div>
+                </div>
+                <p style="margin:14px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,0.3);">문의: 010-2323-2545</p>
+              </div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">01 · 랜딩 / 로그인</span></div>
+      </div>
+
+      <!-- 2. Signup -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr"><span style="font-size:26px;color:#1F3A7A;margin-right:8px;">‹</span><h2 style="flex:1;text-align:center;margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">가입 신청서</h2><div style="width:34px;"></div></div>
+              <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:16px;">
+                <div><label class="field-label">이름 <span style="color:#c0392b;">*</span></label><div class="inp" style="height:52px;display:flex;align-items:center;color:#98989b;">실명을 입력해 주세요</div></div>
+                <div><label class="field-label">휴대폰 번호 <span style="color:#c0392b;">*</span></label><div class="inp" style="height:52px;display:flex;align-items:center;color:#98989b;">010-0000-0000</div></div>
+                <div><label class="field-label">희망 등급 <span style="color:#c0392b;">*</span></label>
+                  <div style="display:flex;gap:10px;">
+                    <div style="flex:1;height:52px;border:1px solid #1F3A7A;background:#1F3A7A;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:white;letter-spacing:1px;">VIP</div>
+                    <div style="flex:1;height:52px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#5d5d60;letter-spacing:1px;">VVIP</div>
+                  </div>
+                </div>
+                <div><label class="field-label">관심 분야 <span style="color:#98989b;font-weight:400;">(선택)</span></label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    <div style="height:44px;padding:0 16px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;font-size:15px;color:#5d5d60;">무용</div>
+                    <div style="height:44px;padding:0 16px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;font-size:15px;color:#5d5d60;">노래</div>
+                    <div style="height:44px;padding:0 16px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;font-size:15px;color:#5d5d60;">악기</div>
+                    <div style="height:44px;padding:0 16px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;font-size:15px;color:#5d5d60;">기타</div>
+                  </div>
+                </div>
+                <div style="padding:14px;background:white;border:1px solid rgba(29,31,32,0.12);display:flex;gap:12px;align-items:flex-start;">
+                  <div style="width:20px;height:20px;border:1.5px solid rgba(29,31,32,0.3);flex:none;margin-top:1px;"></div>
+                  <span style="font-size:14px;color:#374151;line-height:1.6;">개인정보 수집·이용에 동의합니다 <span style="color:#c0392b;">*</span></span>
+                </div>
+              </div>
+              <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(29,31,32,0.08);background:white;"><button class="pri-btn">신청하기</button></div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">02 · 가입 신청서</span></div>
+      </div>
+
+      <!-- 3. Waiting -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr"><h2 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">신청 현황</h2></div>
+              <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:12px;">
+                <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:18px;position:relative;">
+                  <span style="position:absolute;top:-3px;left:-3px;width:8px;height:8px;border-top:1px solid rgba(29,31,32,0.2);border-left:1px solid rgba(29,31,32,0.2);"></span>
+                  <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-top:1px solid rgba(29,31,32,0.2);border-right:1px solid rgba(29,31,32,0.2);"></span>
+                  <span style="position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border-bottom:1px solid rgba(29,31,32,0.2);border-left:1px solid rgba(29,31,32,0.2);"></span>
+                  <span style="position:absolute;bottom:-3px;right:-3px;width:8px;height:8px;border-bottom:1px solid rgba(29,31,32,0.2);border-right:1px solid rgba(29,31,32,0.2);"></span>
+                  <p style="margin:0 0 4px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:#98989b;font-weight:600;">STATUS</p>
+                  <p style="margin:0 0 10px;font-size:18px;font-weight:700;color:#1d1f20;">심사 대기 중</p>
+                  <p style="margin:0;font-size:14px;color:#5d5d60;line-height:1.7;">가입 신청이 접수되었습니다.<br>운영위원회 승인 후 이용하실 수 있습니다.</p>
+                </div>
+                <div style="background:white;border:1px solid rgba(29,31,32,0.12);overflow:hidden;">
+                  <div style="padding:12px 16px;border-bottom:1px solid rgba(29,31,32,0.08);display:flex;align-items:center;gap:10px;"><div style="width:24px;height:24px;background:#1F3A7A;display:flex;align-items:center;justify-content:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:white;">1</span></div><div><p style="margin:0;font-size:14px;font-weight:600;color:#1F3A7A;">대기 중</p><p style="margin:2px 0 0;font-size:11px;color:#98989b;">현재 단계</p></div></div>
+                  <div style="padding:12px 16px;border-bottom:1px solid rgba(29,31,32,0.08);display:flex;align-items:center;gap:10px;opacity:.3;"><div style="width:24px;height:24px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;justify-content:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#5d5d60;">2</span></div><p style="margin:0;font-size:14px;font-weight:500;color:#1d1f20;">운영위원회 승인</p></div>
+                  <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;opacity:.3;"><div style="width:24px;height:24px;border:1px solid rgba(29,31,32,0.2);display:flex;align-items:center;justify-content:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#5d5d60;">3</span></div><p style="margin:0;font-size:14px;font-weight:500;color:#1d1f20;">서비스 이용 시작</p></div>
+                </div>
+                <div style="border:1px solid rgba(29,31,32,0.12);overflow:hidden;">
+                  <div style="background:#1F3A7A;padding:12px 16px;"><p style="margin:0 0 2px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.55);font-weight:600;">TIP</p><p style="margin:0;font-size:14px;font-weight:700;color:white;">홈 화면에 추가하면 편리해요</p></div>
+                  <div style="background:white;padding:12px 16px;border-bottom:1px solid rgba(29,31,32,0.08);"><p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#1d1f20;">아이폰 (Safari)</p><p style="margin:0;font-size:12px;color:#5d5d60;">하단 공유 버튼 → 홈 화면에 추가</p></div>
+                  <div style="background:white;padding:12px 16px;"><p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#1d1f20;">안드로이드 (Chrome)</p><p style="margin:0;font-size:12px;color:#5d5d60;">우상단 메뉴(⋮) → 홈 화면에 추가</p></div>
+                </div>
+              </div>
+              <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(29,31,32,0.08);background:white;"><button class="green-btn">승인 완료 — 체험하기 →</button></div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">03 · 승인 대기</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row 2: 홈 → 예약하기 → 예약 확인 -->
+  <div style="margin-bottom:60px;">
+    <p style="margin:0 0 16px; font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.3); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">예약 플로우</p>
+    <div style="display:flex; gap:28px; align-items:flex-start;">
+
+      <!-- 4. Home -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div style="flex:none;background:linear-gradient(160deg,#152B5C,#1F3A7A);padding:20px 20px 22px;">
+                <p style="margin:0 0 8px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);font-weight:600;">MEMBER</p>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                  <h2 style="margin:0;font-size:26px;font-weight:900;color:white;letter-spacing:-.5px;">홍길동님</h2>
+                  <span style="display:inline-flex;align-items:center;padding:3px 10px;border:1px solid rgba(200,164,74,0.6);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;color:#C8A44A;">VVIP</span>
+                </div>
+                <div style="border:1px solid rgba(255,255,255,0.1);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:13px;color:rgba(255,255,255,0.55);">연회비 만료일</span>
+                  <span style="font-size:13px;font-weight:600;color:white;">2026년 12월 31일</span>
+                </div>
+              </div>
+              <div style="flex:1;overflow:hidden;padding:16px;">
+                <p style="margin:0 0 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:#98989b;font-weight:600;">바로가기</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:18px 14px;position:relative;display:flex;flex-direction:column;gap:12px;">
+                    <span class="corner-tl"></span><span class="corner-tr"></span><span class="corner-bl"></span><span class="corner-br"></span>
+                    <div style="width:40px;height:40px;background:#1F3A7A;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="0"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                    <span style="font-size:15px;font-weight:700;color:#1d1f20;">예약하기</span>
+                  </div>
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:18px 14px;display:flex;flex-direction:column;gap:12px;">
+                    <div style="width:40px;height:40px;border:1px solid rgba(29,31,32,0.15);display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.5" stroke-linecap="round"><path d="M9 12h6M9 8h6M9 16h4M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></div>
+                    <span style="font-size:15px;font-weight:700;color:#1d1f20;">예약 내역</span>
+                  </div>
+                </div>
+                <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:13px 14px;display:flex;align-items:center;justify-content:space-between;">
+                  <div><p style="margin:0 0 1px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:#98989b;font-weight:600;">DEMO</p><p style="margin:0;font-size:14px;font-weight:600;color:#1d1f20;">등급 전환</p></div>
+                  <div style="height:34px;padding:0 14px;background:#f2f2f3;border:1px solid rgba(29,31,32,0.15);display:flex;align-items:center;font-size:13px;font-weight:600;color:#5d5d60;font-family:'Barlow Condensed',sans-serif;">전환</div>
+                </div>
+              </div>
+              <div class="nav-bar">
+                <div class="nav-btn" style="color:#1F3A7A;font-weight:700;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#1F3A7A"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#98989b" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</div>
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#98989b"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</div>
+              </div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">04 · 홈</span></div>
+      </div>
+
+      <!-- 5. Reservation -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr"><span style="font-size:26px;color:#1F3A7A;margin-right:8px;">‹</span><h2 style="flex:1;text-align:center;margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">예약하기</h2><div style="width:34px;"></div></div>
+              <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:18px;">
+                <div><label class="field-label">날짜 선택</label><div class="inp" style="height:52px;display:flex;align-items:center;color:#1d1f20;">2026-09-20</div></div>
+                <div>
+                  <label class="field-label">이용 시간 <span style="font-weight:400;color:#98989b;">— 1회 3시간</span></label>
+                  <div style="width:100%;height:52px;border:1px solid #1F3A7A;background:#1F3A7A;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:white;margin-bottom:8px;">오후 6:00 ~ 오후 9:00</div>
+                  <div style="width:100%;height:52px;border:1px solid rgba(29,31,32,0.2);background:white;display:flex;align-items:center;justify-content:center;font-size:16px;color:#1d1f20;">오후 7:00 ~ 오후 10:00</div>
+                </div>
+                <div><label class="field-label">게스트 동반 <span style="font-weight:400;color:#98989b;">— 1인당 1만원</span></label>
+                  <div style="display:flex;align-items:center;border:1px solid rgba(29,31,32,0.2);background:white;height:52px;">
+                    <div style="width:52px;height:100%;background:#f2f2f3;border-right:1px solid rgba(29,31,32,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;color:#1d1f20;">−</div>
+                    <div style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:600;color:#1d1f20;">2명</div>
+                    <div style="width:52px;height:100%;background:#f2f2f3;border-left:1px solid rgba(29,31,32,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;color:#1d1f20;">+</div>
+                  </div>
+                </div>
+                <div style="padding:12px 14px;border:1px solid rgba(200,164,74,0.4);background:rgba(200,164,74,0.05);display:flex;gap:10px;">
+                  <div style="width:4px;height:4px;background:#C8A44A;margin-top:7px;flex:none;"></div>
+                  <div><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#1d1f20;">단체 행사 / 공간 대여 <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;background:#C8A44A;color:white;padding:1px 7px;">VVIP</span></p><p style="margin:0;font-size:12px;color:#98989b;">오전 10:00 ~ 오후 10:00</p></div>
+                </div>
+                <div style="border:1px solid rgba(29,31,32,0.12);background:white;padding:14px;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:14px;color:#5d5d60;">날짜</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">2026년 9월 20일</span></div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:14px;color:#5d5d60;">시간</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">오후 6:00~9:00</span></div>
+                  <div style="height:1px;background:rgba(29,31,32,0.08);margin:8px 0;"></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;color:#5d5d60;">게스트 이용료</span><span style="font-size:14px;font-weight:700;color:#1F3A7A;">20,000원</span></div>
+                </div>
+              </div>
+              <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(29,31,32,0.08);background:white;"><button class="pri-btn">예약 신청</button></div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">05 · 예약하기</span></div>
+      </div>
+
+      <!-- 6. Confirmation -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr"><h2 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">예약 신청 완료</h2></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;">
+                <div style="width:72px;height:72px;border:1px solid rgba(29,31,32,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:20px;background:white;position:relative;">
+                  <span style="position:absolute;top:-3px;left:-3px;width:8px;height:8px;border-top:1px solid #2d6a4f;border-left:1px solid #2d6a4f;"></span>
+                  <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-top:1px solid #2d6a4f;border-right:1px solid #2d6a4f;"></span>
+                  <span style="position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border-bottom:1px solid #2d6a4f;border-left:1px solid #2d6a4f;"></span>
+                  <span style="position:absolute;bottom:-3px;right:-3px;width:8px;height:8px;border-bottom:1px solid #2d6a4f;border-right:1px solid #2d6a4f;"></span>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#1d1f20;text-align:center;">예약이 신청되었습니다</h3>
+                <p style="margin:0 0 24px;font-size:15px;color:#5d5d60;text-align:center;line-height:1.6;">담당자 확인 후 예약이 확정됩니다.</p>
+                <div style="width:100%;border:1px solid rgba(29,31,32,0.12);background:white;padding:16px;margin-bottom:24px;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5d5d60;">날짜</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">2026년 9월 20일</span></div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5d5d60;">시간</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">오후 6:00~9:00</span></div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:14px;color:#5d5d60;">게스트</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">2명</span></div>
+                  <div style="height:1px;background:rgba(29,31,32,0.08);margin:4px 0 10px;"></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;color:#5d5d60;">게스트 이용료</span><span style="font-size:14px;font-weight:700;color:#1F3A7A;">20,000원</span></div>
+                </div>
+              </div>
+              <div style="flex:none;padding:12px 20px 20px;border-top:1px solid rgba(29,31,32,0.08);background:white;"><button class="pri-btn">홈으로</button></div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">06 · 예약 확인</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row 3: 예약내역 → 내정보 → 관리자 -->
+  <div>
+    <p style="margin:0 0 16px; font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.3); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">마이페이지 + 운영진</p>
+    <div style="display:flex; gap:28px; align-items:flex-start;">
+
+      <!-- 7. Reservations list -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr" style="background:white;"><h2 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">예약 내역</h2></div>
+              <div style="flex:1;overflow:hidden;padding:16px;">
+                <p style="margin:0 0 10px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:#98989b;font-weight:600;">다가오는 예약</p>
+                <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:14px 16px;margin-bottom:10px;position:relative;">
+                  <span class="corner-tl"></span><span class="corner-tr"></span><span class="corner-bl"></span><span class="corner-br"></span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:16px;font-weight:700;color:#1d1f20;">2026년 9월 20일</span><span class="tag-navy">확정</span></div>
+                  <p style="margin:0 0 3px;font-size:14px;color:#5d5d60;">오후 6:00 ~ 오후 9:00</p>
+                  <p style="margin:0;font-size:12px;color:#98989b;">게스트 2명 동반</p>
+                </div>
+                <p style="margin:14px 0 10px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:#98989b;font-weight:600;">지난 예약</p>
+                <div style="background:white;border:1px solid rgba(29,31,32,0.08);padding:14px 16px;opacity:.6;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:16px;font-weight:700;color:#1d1f20;">2026년 8월 15일</span><span class="tag-out">완료</span></div>
+                  <p style="margin:0;font-size:14px;color:#5d5d60;">오후 6:00 ~ 오후 9:00</p>
+                </div>
+              </div>
+              <div class="nav-bar">
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#98989b"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+                <div class="nav-btn" style="color:#1F3A7A;font-weight:700;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F3A7A" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</div>
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#98989b"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</div>
+              </div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">07 · 예약 내역</span></div>
+      </div>
+
+      <!-- 8. My Info -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#f2f2f3; display:flex; flex-direction:column;">
+              <div class="hdr" style="background:white;"><h2 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">내 정보</h2></div>
+              <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:10px;">
+                <div style="background:linear-gradient(150deg,#152B5C,#1F3A7A);padding:20px;position:relative;">
+                  <span style="position:absolute;top:-4px;left:-4px;width:10px;height:10px;border-top:1px solid rgba(200,164,74,0.5);border-left:1px solid rgba(200,164,74,0.5);"></span>
+                  <span style="position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-top:1px solid rgba(200,164,74,0.5);border-right:1px solid rgba(200,164,74,0.5);"></span>
+                  <span style="position:absolute;bottom:-4px;left:-4px;width:10px;height:10px;border-bottom:1px solid rgba(200,164,74,0.5);border-left:1px solid rgba(200,164,74,0.5);"></span>
+                  <span style="position:absolute;bottom:-4px;right:-4px;width:10px;height:10px;border-bottom:1px solid rgba(200,164,74,0.5);border-right:1px solid rgba(200,164,74,0.5);"></span>
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+                    <div><p style="margin:0 0 4px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);font-weight:600;">MEMBER</p><h3 style="margin:0;font-size:26px;font-weight:900;color:white;letter-spacing:-.5px;">홍길동</h3></div>
+                    <span style="display:inline-flex;align-items:center;padding:3px 10px;border:1px solid rgba(200,164,74,0.6);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;color:#C8A44A;">VVIP</span>
+                  </div>
+                  <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.5);letter-spacing:.5px;">010-2323-2545</p>
+                </div>
+                <div style="background:white;border:1px solid rgba(29,31,32,0.12);">
+                  <div class="card-row"><span style="font-size:14px;color:#5d5d60;">회원 등급</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">VVIP</span></div>
+                  <div class="card-row"><span style="font-size:14px;color:#5d5d60;">연회비 만료일</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">2026년 12월 31일</span></div>
+                  <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#5d5d60;">관심 분야</span><span style="font-size:14px;font-weight:600;color:#1d1f20;">무용, 노래</span></div>
+                </div>
+              </div>
+              <div class="nav-bar">
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#98989b"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+                <div class="nav-btn" style="color:#98989b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#98989b" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>예약내역</div>
+                <div class="nav-btn" style="color:#1F3A7A;font-weight:700;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#1F3A7A"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>내 정보</div>
+              </div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">08 · 내 정보</span></div>
+      </div>
+
+      <!-- 9. Admin -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="overflow:hidden; width:275px; height:596px; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <div style="transform:scale(0.7); transform-origin:top left; width:393px; height:852px; border-radius:52px; background:#1F3A7A; position:relative;">
+            <div class="di"></div>
+            <div class="sb"><span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:white;">9:41</span></div>
+            <div class="ca" style="background:#eef2f8; display:flex; flex-direction:column;">
+              <div class="hdr" style="background:white;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:26px;color:#1F3A7A;">‹</span>
+                  <h2 style="margin:0;font-family:'Barlow Condensed','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;color:#1d1f20;letter-spacing:.5px;">관리자 홈</h2>
+                </div>
+                <div style="background:#1F3A7A;padding:3px 8px;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:white;letter-spacing:1px;">ADMIN</span></div>
+              </div>
+              <div style="flex:1;overflow:hidden;padding:16px;">
+                <p style="margin:0 0 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:#5d5d60;font-weight:600;">관리 메뉴</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:16px 14px;position:relative;">
+                    <span class="corner-tl"></span><span class="corner-tr"></span><span class="corner-bl"></span><span class="corner-br"></span>
+                    <div style="position:absolute;top:12px;right:12px;background:#c0392b;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:white;">3</span></div>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1F3A7A" stroke-width="1.5" stroke-linecap="round" style="margin-bottom:10px;display:block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <p style="margin:0;font-size:14px;font-weight:700;color:#1d1f20;">가입 승인</p>
+                  </div>
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:16px 14px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.5" stroke-linecap="round" style="margin-bottom:10px;display:block;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    <p style="margin:0;font-size:14px;font-weight:700;color:#1d1f20;">대신 등록</p>
+                  </div>
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:16px 14px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C8A44A" stroke-width="1.5" stroke-linecap="round" style="margin-bottom:10px;display:block;"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <p style="margin:0;font-size:14px;font-weight:700;color:#1d1f20;">회비 관리</p>
+                  </div>
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:16px 14px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.5" stroke-linecap="round" style="margin-bottom:10px;display:block;"><rect x="3" y="4" width="18" height="18"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <p style="margin:0;font-size:14px;font-weight:700;color:#1d1f20;">예약 현황</p>
+                  </div>
+                  <div style="background:white;border:1px solid rgba(29,31,32,0.12);padding:14px;grid-column:1/-1;display:flex;align-items:center;gap:14px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5d5d60" stroke-width="1.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <p style="margin:0;font-size:14px;font-weight:700;color:#1d1f20;">게스트 정산</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div style="text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.5);font-weight:600;">09 · 관리자 홈</span></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

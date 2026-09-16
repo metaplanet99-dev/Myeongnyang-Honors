@@ -1,0 +1,293 @@
+# Handoff: 명량아너스클럽 회원 전용 웹앱
+
+## Overview
+명량문화재단 공유공간 회원제 예약 웹앱 프로토타입입니다.
+로그인 없이 볼 수 있는 랜딩(클럽 소개)부터 회원 가입 신청, 예약, 마이페이지, 운영자 관리까지 전체 플로우를 포함합니다.
+
+## About the Design Files
+`명량아너스클럽.dc.html`은 **HTML 프로토타입(디자인 레퍼런스)**입니다.
+이 파일을 직접 배포하지 말고, 이 문서를 기반으로 **React (Next.js 권장)** 또는 팀의 기존 프레임워크로 재구현하세요.
+`image-slot.js`는 드래그앤드롭 이미지 슬롯 컴포넌트로, 프로토타입 전용입니다.
+
+## Fidelity
+**High-fidelity** — 최종 색상, 타이포그래피, 간격, 인터랙션이 모두 적용된 픽셀 수준 목업입니다.
+개발 시 이 디자인을 픽셀 단위로 재현하되, 기존 코드베이스의 컴포넌트 라이브러리(예: shadcn/ui, Chakra 등)를 활용하세요.
+
+---
+
+## Design Tokens
+
+### Colors
+| Token | Value | 용도 |
+|-------|-------|------|
+| `--navy-deep` | `#152B5C` | 히어로 그라디언트 시작 |
+| `--navy` | `#1F3A7A` | 주 브랜드 색, 버튼, 헤더 |
+| `--gold` | `#DA9616` | VVIP 등급, 강조 포인트 |
+| `--bg` | `#F8F9FC` | 앱 배경 |
+| `--text-primary` | `#0D1B3E` | 본문 제목 |
+| `--text-secondary` | `#5D6B7A` | 보조 텍스트 |
+| `--text-muted` | `#98989b` | 라벨, 힌트 |
+| `--border` | `#E2E8F0` | 테두리 |
+| `--fill-light` | `#F4F6FA` | 인풋 배경, 보조 버튼 |
+| `--navy-tint` | `#EBF0FF` | 확정 배지 배경 |
+| `--green` | `#1a7a4a` | 성공/승인 버튼 |
+
+### Typography
+- **폰트**: Pretendard (한글), Barlow Condensed (영문 헤딩/라벨)
+- CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css`
+- CDN: `https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700`
+
+| 용도 | size | weight |
+|------|------|--------|
+| 페이지 타이틀 | 26px | 900 |
+| 섹션 헤딩 | 18px | 700 |
+| 카드 타이틀 | 16px | 700 |
+| 본문 | 15px | 400 |
+| 보조 | 14px | 400–600 |
+| 라벨 (Barlow Condensed) | 11px | 600, letter-spacing 1.5px |
+
+### Spacing & Radius
+- 카드 border-radius: `14px`
+- 버튼 border-radius: `12px`
+- 인풋 border-radius: `10px`
+- 칩/배지: `100px` (pill)
+- 페이지 패딩: `16–20px`
+- 카드 패딩: `16–18px`
+
+### Shadows
+- 카드: `0 2px 12px rgba(13,27,62,0.08)`
+- 쇼트컷 카드: `0 2px 10px rgba(13,27,62,0.08)`
+
+---
+
+## Screens / Views
+
+### 01. 랜딩 (비로그인)
+**목적**: 클럽 소개, 등급 안내, 문의 — 로그인 없이 접근 가능
+
+**레이아웃**:
+- 상단 네비: 흰 배경, h=52px, 좌 브랜드명(Barlow Condensed 18px navy), 우 ADMIN 링크
+- 히어로: h=210px, 배경이미지(`uploads/hero.png`) + `linear-gradient(160deg, rgba(13,27,62,0.75), rgba(13,27,62,0.4))` 오버레이. 텍스트 padding 28px 20px
+  - 서브타이틀: 12px, rgba(white,0.7)
+  - 메인카피: 26px/900, white, line-height 1.25
+  - VIP/VVIP 필 배지
+- 스크롤 콘텐츠 영역 (background: #F8F9FC):
+  - SPACE — 공간 소개: 가로 자동 스크롤 캐러셀 (현재 이미지 4장, 각 300×170px, border-radius 10px), 설명 텍스트
+  - MEMBERSHIP — 회원 등급: VIP(navy 헤더), VVIP(gold 그라디언트 헤더) 카드
+  - 3열 카드: 가입 자격 / 운영 시간 / 이용 문의(사무국장·사무총장 연락처)
+  - LOCATION — 오시는 길: Google Maps iframe + 주소 카드
+    - 데스크톱 2열(지도 1.35fr / 정보 1fr), 900px 이하 1열
+    - 지도 높이: 데스크톱 최소 340px, 모바일 최소 240px
+    - 정보 카드: 주소, 운영 시간, 방문 문의(`tel:` 링크), 네이버 지도·카카오맵 바로가기, 주소 복사 버튼
+- 하단 고정 CTA: 2버튼(회원가입하기 — 흰 배경/navy 텍스트 | 예약하기 — navy 배경/흰 텍스트), h=56px
+
+### 02. 로그인
+**목적**: 카카오/구글 소셜 로그인
+
+**레이아웃**:
+- 헤더: 뒤로가기 + "로그인" 중앙
+- 카드(padding 24px):
+  - 컨텍스트 라벨 + 타이틀 (가입용 / 예약용 분기)
+  - 카카오 버튼: h=52px, bg=#FEE500, border-radius 12px
+  - 구글 버튼: h=52px, white, border 1.5px #E2E8F0
+  - 신규/기존 회원 체험 버튼 (demo용 — 실제 구현 시 제거)
+
+### 03. 가입 신청서
+**목적**: 신규 회원 가입 신청
+
+**필드**:
+- 이름 (text, required)
+- 휴대폰 번호 (tel, required)
+- 희망 등급 선택: VIP(navy) / VVIP(gold) — 토글 버튼
+- 관심 분야: 무용/노래/악기/기타 — 멀티 칩 선택
+- 개인정보 동의 체크박스 (required)
+
+**Validation**: 이름, 전화, 등급, 동의 모두 필수. 미입력 시 alert.
+
+**하단**: "신청하기" — navy 버튼
+
+### 04. 승인 대기
+**목적**: 신청 접수 확인 + 승인 대기 안내
+
+**컴포넌트**:
+- 상태 카드: 노란 아이콘(clock) + "심사 대기 중"
+- 3단계 스텝: 1(현재 활성)/2/3(비활성 opacity 0.35)
+- TIP 카드: navy 헤더 + iOS/Android 홈화면 추가 안내
+
+### 05. 홈 (로그인 후)
+**목적**: 회원 대시보드
+
+**레이아웃**:
+- 상단 헤더: navy 그라디언트, 회원명(26px/900), 등급 배지(pill — VIP:navy, VVIP:gold), 연회비 만료일 박스
+- 콘텐츠 (bg #F8F9FC, padding 18px 16px):
+  - 2열 그리드: 예약하기(navy 아이콘박스) / 예약내역 카드
+  - 다가오는 예약 프리뷰 카드
+  - 등급 전환 데모 카드 (실제 구현 시 제거)
+- 하단 탭바: 홈/예약내역/내정보 — 활성: navy, 비활성: #98989b
+
+### 06. 예약하기
+**목적**: 날짜·시간·게스트 선택 후 예약 신청
+
+**필드**:
+- 날짜: date input
+- 시간 슬롯: 2개 버튼(오후 6:00~9:00 / 오후 7:00~10:00) — 선택 시 navy 활성
+- 게스트: −/숫자/+ 스테퍼 (0~10명)
+- VVIP 전용 공간대여 안내 박스 (gold 테두리, 노란 배경) — 등급에 따라 조건부 표시
+- 예약 요약 카드
+
+**하단**: "예약 신청" navy 버튼
+
+### 07. 예약 확인
+**목적**: 신청 완료 피드백
+
+**레이아웃**: 중앙 정렬, 체크 아이콘(green, border-radius 16px, bg #ECFDF5), 제목, 설명, 요약 카드, "홈으로" 버튼
+
+### 08. 예약 내역
+**목적**: 다가오는 예약 + 지난 예약 목록
+
+- 다가오는: 카드, 날짜/상태배지(EBF0FF)/시간/게스트
+- 지난: opacity 0.6
+
+### 09. 내 정보
+**목적**: 프로필 및 회원 정보 확인
+
+- navy 그라디언트 프로필 카드(border-radius 16px)
+- 등급/만료일/관심분야 정보 카드
+
+### 10. 관리자 홈
+**목적**: 운영진 전용 관리 메뉴
+
+- 접근: 랜딩 > ADMIN 링크
+- 2열 그리드: 가입승인(red 뱃지 3)/대신등록/회비관리/예약현황
+- 전체폭: 게스트 정산
+
+---
+
+## Interactions & Behavior
+
+### 화면 전환 흐름
+```
+랜딩
+  └─ 회원가입하기 → 로그인 → 가입신청서 → 승인대기 → 홈
+  └─ 예약하기     → 로그인 → 예약하기   → 예약확인 → 홈
+  └─ ADMIN       → 관리자홈
+홈
+  └─ 예약하기 → 예약하기 → 예약확인
+  └─ 예약내역 (탭)
+  └─ 내정보   (탭)
+```
+
+### 애니메이션
+- 화면 전환: `fadeUp` (opacity 0→1, translateY 8px→0, duration 0.4s ease)
+- 예약완료 체크: `checkPop` (scale 0→1.15→1, duration 0.5s)
+
+### 등급 조건부 UI
+- VVIP일 때만: 예약화면의 공간대여 안내 박스 표시
+- 등급 배지 색상: VIP → navy(`#1F3A7A`), VVIP → gold(`#DA9616`)
+
+---
+
+## State Management (React 기준)
+
+```typescript
+type Screen = 'landing' | 'login' | 'signup' | 'waiting' | 'home' |
+              'reservation' | 'confirm' | 'reservations' | 'myinfo' | 'admin';
+
+interface AppState {
+  screen: Screen;
+  loginIntent: 'signup' | 'reservation';
+  // 가입 폼
+  name: string;
+  phone: string;
+  grade: 'VIP' | 'VVIP' | '';
+  interests: string[];
+  agreed: boolean;
+  // 예약
+  resDate: string;
+  resTime: string;
+  resGuests: number; // 0~10
+  // 회원 정보
+  memberName: string;
+  memberGrade: 'VIP' | 'VVIP';
+}
+```
+
+---
+
+## Assets
+
+| 파일 | 용도 | 사이즈 |
+|------|------|--------|
+| `uploads/hero.png` | 랜딩 히어로 배경 | 750×400px |
+| `uploads/space-1~4.png` | 공간 소개 이미지 (현재 4장) | 600×340px |
+
+> 공간 사진은 `app.js`의 `spaceImages` 배열에서 개수 제한 없이 늘리거나 줄일 수 있습니다.
+
+---
+
+## 장소 정보 (오시는 길)
+`app.js` 상단의 `venue` 객체 한 곳에서 관리합니다. 주소가 바뀌면 여기만 고치면 지도·주소·링크가 전부 따라갑니다.
+
+```js
+const venue = {
+  name: "명량아너스클럽",
+  address: "서울특별시 강서구 개화동로27가길 33 (방화동) 지하 2층",
+  searchQuery: "서울특별시 강서구 개화동로27가길 33",
+  hours: "오후 6:00 ~ 오후 10:00 · 1회 3시간 단위",
+  contacts: [
+    { role: "사무국장", name: "김지현", phone: "010-4245-5871" },
+    { role: "사무총장", name: "윤형관", phone: "010-5495-6465" },
+  ],
+};
+```
+
+| 용도 | URL |
+|------|-----|
+| 지도 embed | `https://maps.google.com/maps?q={searchQuery}&output=embed&hl=ko` |
+| 네이버 지도 | `https://map.naver.com/p/search/{searchQuery}` |
+| 카카오맵 | `https://map.kakao.com/?q={searchQuery}` |
+
+주소 복사는 `navigator.clipboard`를 쓰되, 보안 컨텍스트(https)가 아니면 `execCommand('copy')`로 대체됩니다.
+
+---
+
+## Contact (하단 표시)
+- 사무국장 김지현: 010-4245-5871
+- 사무총장 윤형관: 010-5495-6465
+
+---
+
+## Files in this Package
+
+### 실행되는 웹앱
+- `index.html` — 실행 진입점
+- `app.js` — 화면 렌더링·상태 관리 전체
+- `styles.css` — 반응형 스타일
+- `uploads/` — 히어로 및 공간 소개 이미지
+
+### 디자인 원본 (참고용, 배포 대상 아님)
+- `명량아너스클럽.dc.html` — 전체 인터랙티브 프로토타입 (10개 화면)
+- `모든화면.dc.html` — 전체 화면 개요 (정적 시안)
+- `image-slot.js` — 드래그앤드롭 이미지 슬롯 (프로토타입 전용)
+
+---
+
+## Implemented Web App
+웹용 반응형 구현 파일이 추가되었습니다.
+
+- `index.html` — 실행 진입점
+- `styles.css` — 모바일/데스크톱 반응형 스타일
+- `app.js` — 회원 플로우, 예약 플로우, 관리자 화면 상태 관리
+
+브라우저에서 `index.html`을 열면 바로 확인할 수 있습니다.
+다만 오시는 길의 Google 지도와 주소 복사 기능은 `file://`로 열면 제한될 수 있으므로,
+아래처럼 로컬 서버로 띄워서 확인하는 것을 권장합니다.
+
+```bash
+python -m http.server 8777
+```
+그 뒤 브라우저에서 `http://localhost:8777` 로 접속합니다.
+
+### 실내 공간 사진 교체
+랜딩의 공간 소개 캐러셀 이미지는 `app.js` 상단의 `spaceImages` 배열에서 관리합니다.
+사진 파일을 `uploads/` 폴더에 넣고 `{ src: "uploads/파일명.jpg", alt: "설명" }` 항목을 원하는 개수만큼 추가하면 자동으로 느리게 스크롤됩니다.
