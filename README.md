@@ -33,60 +33,104 @@
 | `--green` | `#1a7a4a` | 성공/승인 버튼 |
 
 ### Typography
-- **큰 제목 (h1, h2)**: MaruBuri SemiBold — 네이버 마루부리, 세리프
-- **본문 · 버튼 · 표 · 입력**: Pretendard Variable
-- **영문 라벨 (SPACE, MEMBERSHIP, VIP/VVIP 등)**: Cormorant Garamond, 자간 넓게
+- **폰트**: Pretendard Variable (한글·본문 전반), Barlow Condensed (영문 헤딩/라벨)
 
 ```html
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
 ```
 
 ```css
-/* 마루부리는 저장소에 직접 담아 둔다 (fonts/MaruBuri-SemiBold.woff2) */
-@font-face {
-  font-family: "MaruBuri";
-  src: url("./fonts/MaruBuri-SemiBold.woff2") format("woff2");
-  font-weight: 600;
-  font-display: swap;
+font-family: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
+```
+
+**전체 글꼴(`pretendard.css`)을 쓰지 마세요.** 처음에 그렇게 되어 있었는데,
+한글 전체 글자를 굵기별로 4벌 내려받아 **약 3MB**를 소비했습니다. 사진 전부(0.7MB)보다 큽니다.
+
+지금은 `pretendardvariable-dynamic-subset.css`를 씁니다.
+
+- 화면에 실제로 쓰인 글자 구간만 조각으로 내려받습니다 → **약 380KB (87% 감소)**
+- 가변 글꼴이라 굵기 45~920을 파일 하나로 처리합니다 (굵기마다 따로 받지 않음)
+- **버전(`@v1.3.9`)을 반드시 고정해 두세요.** 버전 없이 쓰면 원작자가 파일 위치를
+  바꿀 때 글꼴이 통째로 깨집니다. 실제로 이 저장소는 경로가 바뀐 이력이 있습니다.
+
+| 용도 | size | weight |
+|------|------|--------|
+| 페이지 타이틀 | 26px | 900 |
+| 섹션 헤딩 | 18px | 700 |
+| 카드 타이틀 | 16px | 700 |
+| 본문 | 15px | 400 |
+| 보조 | 14px | 400–600 |
+| 라벨 (Barlow Condensed) | 11px | 600, letter-spacing 1.5px |
+
+### 히어로 배경
+히어로 원본(1920×900)은 **그림이 오른쪽 구간에만** 있고 왼쪽 절반은 단색 남색입니다.
+PC에서는 가로로 넓어 그림이 보이지만, 폰의 히어로는 **약 375×380으로 거의 정사각**이라
+`cover`로 맞추면 가운데(빈 남색)만 잘려 보여 허전했습니다.
+
+`background-position`으로 보여줄 위치를 옮기는 것으로는 원본의 좁은 세로 띠밖에 못 보여줍니다.
+그래서 **그림 부분만 떼어낸 폰 전용 이미지**를 따로 씁니다.
+
+| 화면 | 이미지 | 크기 |
+|------|--------|------|
+| PC (901px~) | `uploads/hero.jpg` | 1920×900 · 123KB |
+| 폰 (~900px) | `uploads/hero-mobile.jpg` | 920×900 · 89KB |
+
+`hero-mobile.jpg`는 원본의 `x = 1000~1920` 구간을 잘라낸 것입니다.
+비율(1.022)이 폰 히어로(0.987)와 거의 같아 **가로 13px만 잘리고 구도 전체가 들어옵니다.**
+
+```css
+/* @media (max-width: 900px) 안 */
+background:
+  linear-gradient(176deg,
+    rgba(13,27,62,0.80) 0%,
+    rgba(13,27,62,0.64) 45%,
+    rgba(13,27,62,0.46) 72%,
+    rgba(13,27,62,0.16) 100%   /* 아래쪽은 거의 덮지 않아 그림이 그대로 보인다 */
+  ),
+  url("./uploads/hero-mobile.jpg") center / cover;
+```
+
+덮는 막을 옅게 하면 그림은 살아나지만 흰 글자 대비가 떨어집니다.
+본문이 놓이는 높이(히어로의 약 70% 지점)가 하필 사진에서 가장 밝은 구간이라,
+막만으로 대비를 맞추려면 알파 0.78 이상이 필요하고 그러면 그림이 다시 안 보입니다.
+
+그래서 막은 옅게 두고 **글자 자체에 그림자**를 넣어 해결했습니다.
+
+```css
+.hero-copy .eyebrow,
+.hero-copy h1,
+.hero-copy p {
+  text-shadow:
+    0 1px 2px rgba(8, 16, 40, 0.75),
+    0 4px 18px rgba(8, 16, 40, 0.65);
 }
-
-h1, h2 { font-family: "MaruBuri", "Pretendard Variable", serif; font-weight: 600; }
-body   { font-family: "Pretendard Variable", "Pretendard", system-ui, sans-serif; }
 ```
 
-### 글꼴 규칙
+**히어로 사진을 교체하면 폰 전용 이미지도 같이 다시 만들어야 합니다.**
+원본에서 보여주고 싶은 부분을 잘라 `hero-mobile.jpg`로 저장하고,
+비율을 폰 히어로(약 1:1)에 가깝게 맞추면 잘림 없이 들어갑니다.
+막 농도와 글자 그림자도 새 사진 기준으로 다시 확인해야 합니다.
 
-**세리프는 큰 제목(h1, h2)에만.** h3 이하와 본문·버튼·표는 Pretendard를 씁니다.
-세리프는 작은 글씨에서 획이 가늘어져 가독성이 떨어집니다.
+### 한글 줄바꿈
+`body`에 아래 세 줄이 걸려 있고, 상속되는 속성이라 **모든 요소가 물려받습니다.**
+특정 태그에만 걸면 버튼·라벨·표처럼 빠지는 곳이 생기므로 개별 선언을 늘리지 마세요.
 
-**넓은 자간(letter-spacing)은 영문 라벨에만.** 한글에 `0.2em` 같은 자간을 주면
-글자가 흩어져 보입니다. 실제로 히어로의 `(재)명량문화재단 공유공간`과
-정보 목록 라벨(`이용료`, `운영 시간`)은 한글이라 Pretendard + 좁은 자간으로 따로 둡니다.
-
-**마루부리는 CDN을 쓰지 않고 저장소에 담아 둡니다.**
-네이버 공식 CDN(`hangeul.pstatic.net`)의 원본은 455KB인데, 여기서 필요한 글자만
-추려 258KB로 줄인 파일을 씁니다. 외부 주소가 바뀌어도 깨지지 않습니다.
-부분집합은 `fontTools.subset`으로 만들었습니다:
-
-```bash
-python -m fontTools.subset MaruBuri-SemiBold.woff2   --text-file=chars.txt --flavor=woff2 --no-hinting --desubroutinize   --output-file=MaruBuri-SemiBold.woff2
+```css
+word-break: keep-all;      /* 한글을 어절 단위로만 끊는다 */
+overflow-wrap: break-word; /* 끊을 데가 없는 긴 문자열만 강제로 넘긴다 */
+text-wrap: pretty;         /* 마지막 줄에 한 단어만 남는 것을 줄인다 */
 ```
 
-한글 음절 전체(11,172자)를 넣어 뒀습니다. **회원 이름처럼 바뀌는 글자가
-제목에 들어가도 깨지지 않게 하기 위해서**입니다. 쓰는 글자만 넣으면 40KB까지
-줄일 수 있지만, 목록에 없는 글자가 오면 그 글자만 다른 글꼴로 나옵니다.
+제목(`h1~h3`)만 `text-wrap: balance`로 줄 길이를 고르게 맞춥니다.
 
-### 글꼴 용량
+추가 규칙:
+- 의존명사 `수`는 뒤 단어와 줄바꿈 없는 공백(` `)으로 묶여 있습니다.
+  `이용하실 수 있습니다`에서 `있습니다`만 다음 줄로 떨어지는 것을 막기 위함입니다.
+- 한 덩어리로 읽어야 하는 문구는 `.nowrap`으로 감쌉니다. (예: `게스트 2명 · 확정`)
+- 관리자 표는 `.table-wrap`(가로 스크롤) 안에 있어 좁은 화면에서도 페이지가 밀리지 않습니다.
 
-| 글꼴 | 용량 | 용도 |
-|------|------|------|
-| Pretendard Variable | 약 380 KB | 본문 전체 |
-| MaruBuri SemiBold | 258 KB | 큰 제목 |
-| Cormorant Garamond | 약 69 KB | 영문 라벨 |
-| **합계** | **약 707 KB** | |
-
-라이선스 고지는 `fonts/NOTICE.md`를 참고하세요.
+검증: 320 / 375 / 414 / 1280px × 전체 15개 화면에서 가로 밀림 0, 줄바꿈 이상 없음.
 
 ### Spacing & Radius
 - 카드 border-radius: `14px`
