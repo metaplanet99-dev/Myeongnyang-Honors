@@ -249,10 +249,6 @@ li,
   color: #0d1b3e;
 }
 
-.landing-mobile-cta {
-  display: none;
-}
-
 .content {
   width: min(var(--page-max), calc(100% - (var(--page-gutter) * 2)));
   margin: 0 auto;
@@ -845,8 +841,8 @@ th {
     padding: 38px 0 28px;
   }
 
-  .landing-page {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  .app {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
   }
 
   .grid.two,
@@ -894,7 +890,6 @@ th {
 
   .app-shell {
     display: block;
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   .sidebar {
@@ -916,7 +911,7 @@ th {
     bottom: 0;
     z-index: 30;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     min-height: 58px;
     background: #fff;
     border-top: 1px solid var(--border);
@@ -941,6 +936,11 @@ th {
   .mobile-tabs svg {
     width: 18px;
     height: 18px;
+  }
+
+  .mobile-tabs button span {
+    white-space: nowrap;
+    letter-spacing: -0.3px;
   }
 
   .mobile-tabs button.active {
@@ -1030,33 +1030,6 @@ th {
   .hero-cta {
     width: 100%;
     min-height: 58px;
-  }
-
-  .landing-mobile-cta {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 40;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--border);
-    background: #fff;
-    box-shadow: 0 -2px 16px rgba(13, 27, 62, 0.06);
-  }
-
-  .landing-mobile-cta .primary-btn,
-  .landing-mobile-cta .secondary-btn {
-    min-height: 48px;
-    padding: 0 10px;
-    border-radius: 12px;
-    font-size: 14px;
-  }
-
-  .landing-mobile-cta .secondary-btn {
-    background: var(--soft);
   }
 
   .content {

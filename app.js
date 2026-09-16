@@ -3,6 +3,7 @@ const app = document.querySelector("#app");
 const state = {
   route: "landing",
   loginIntent: "signup",
+  loggedIn: false,
   signup: {
     name: "",
     phone: "",
@@ -83,7 +84,10 @@ const routes = {
   ],
 };
 
+const memberRoutes = ["home", "reservations", "myinfo"];
+
 function setRoute(route) {
+  if (memberRoutes.includes(route)) state.loggedIn = true;
   state.route = route;
   render();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -285,10 +289,6 @@ function landing() {
         </section>
         ${locationSection()}
       </div>
-      <div class="landing-mobile-cta">
-        <button class="secondary-btn" onclick="setLoginIntent('signup')">${icon("people")}회원가입하기</button>
-        <button class="primary-btn" onclick="setLoginIntent('reservation')">${icon("calendar")}예약하기</button>
-      </div>
     </main>
   `;
 }
@@ -406,19 +406,28 @@ function gradeCard(title, price, benefits, gold) {
 }
 
 function login() {
+  const intentTargets = { reservation: "reservation", myinfo: "myinfo", signup: "signup" };
+  const target = intentTargets[state.loginIntent] || "signup";
   const isReservation = state.loginIntent === "reservation";
+  const isMyinfo = state.loginIntent === "myinfo";
+  const label = isReservation ? "RESERVATION" : isMyinfo ? "MY PAGE" : "MEMBERSHIP";
+  const title = isReservation
+    ? "예약을 위해 로그인해 주세요"
+    : isMyinfo
+      ? "내 정보를 보려면 로그인해 주세요"
+      : "가입 신청을 위해 로그인해 주세요";
   return `
     ${topbar()}
     <main class="content">
       <section class="grid two" style="align-items:center; min-height:calc(100vh - 160px);">
         <div>
-          <p class="section-label">${isReservation ? "RESERVATION" : "MEMBERSHIP"}</p>
-          <h1>${isReservation ? "예약을 위해 로그인해 주세요" : "가입 신청을 위해 로그인해 주세요"}</h1>
+          <p class="section-label">${label}</p>
+          <h1>${title}</h1>
           <p class="section-desc">실서비스에서는 카카오 또는 구글 소셜 로그인을 연결합니다. 현재는 프로토타입 흐름 확인용 버튼으로 이동합니다.</p>
         </div>
         <div class="card pad form">
-          <button class="primary-btn" style="background:#FEE500;color:#191919;" onclick="${isReservation ? "setRoute('reservation')" : "setRoute('signup')"}">${icon("user")}카카오로 로그인</button>
-          <button class="secondary-btn" onclick="${isReservation ? "setRoute('reservation')" : "setRoute('signup')"}">${icon("user")}구글로 로그인</button>
+          <button class="primary-btn" style="background:#FEE500;color:#191919;" onclick="setRoute('${target}')">${icon("user")}카카오로 로그인</button>
+          <button class="secondary-btn" onclick="setRoute('${target}')">${icon("user")}구글로 로그인</button>
           <div class="grid two">
             <button class="ghost-btn" onclick="setRoute('signup')">${icon("plus")}신규 회원 체험</button>
             <button class="ghost-btn" onclick="setRoute('home')">${icon("home")}기존 회원 체험</button>
@@ -431,9 +440,7 @@ function login() {
 
 function shell(kind, content) {
   const nav = routes[kind];
-  const mobileNav = kind === "member"
-    ? [["home", "홈"], ["reservations", "예약내역"], ["myinfo", "내 정보"]]
-    : nav.slice(0, 4);
+  const mobileNav = nav.slice(0, 4);
   return `
     ${topbar()}
     <div class="app-shell">
@@ -447,10 +454,45 @@ function shell(kind, content) {
         </nav>
       </aside>
       <main class="main">${content}</main>
+      ${kind === "admin" ? `
       <nav class="mobile-tabs">
         ${mobileNav.map(([route, label]) => `<button class="${state.route === route ? "active" : ""}" onclick="setRoute('${route}')">${icon(navIcon(route))}<span>${label}</span></button>`).join("")}
-      </nav>
+      </nav>` : ""}
     </div>
+  `;
+}
+
+const bottomTabs = [
+  { key: "home", label: "홈", iconName: "home", match: ["landing", "home"] },
+  { key: "reservation", label: "예약하기", iconName: "calendar", match: ["reservation", "confirm", "reservations"] },
+  { key: "myinfo", label: "마이페이지", iconName: "user", match: ["myinfo"] },
+  { key: "signup", label: "회원가입하기", iconName: "people", match: ["signup", "waiting"] },
+];
+
+function tabAction(key) {
+  if (key === "home") return state.loggedIn ? "setRoute('home')" : "setRoute('landing')";
+  if (key === "signup") return "setLoginIntent('signup')";
+  return state.loggedIn ? `setRoute('${key}')` : `setLoginIntent('${key}')`;
+}
+
+function activeTabKey() {
+  if (state.route === "login") {
+    return bottomTabs.some((t) => t.key === state.loginIntent) ? state.loginIntent : "signup";
+  }
+  const hit = bottomTabs.find((t) => t.match.includes(state.route));
+  return hit ? hit.key : "";
+}
+
+function mobileTabBar() {
+  const active = activeTabKey();
+  return `
+    <nav class="mobile-tabs" aria-label="주요 메뉴">
+      ${bottomTabs.map((t) => `
+        <button class="${t.key === active ? "active" : ""}"
+                ${t.key === active ? 'aria-current="page"' : ""}
+                onclick="${tabAction(t.key)}">${icon(t.iconName)}<span>${t.label}</span></button>
+      `).join("")}
+    </nav>
   `;
 }
 
@@ -907,7 +949,9 @@ function render() {
     "admin-bookings": adminBookings,
     "admin-settlement": adminSettlement,
   };
-  app.innerHTML = `<div class="app">${(views[state.route] || landing)()}</div>`;
+  const view = views[state.route] || landing;
+  const isAdmin = state.route.startsWith("admin");
+  app.innerHTML = `<div class="app">${view()}${isAdmin ? "" : mobileTabBar()}</div>`;
 }
 
 Object.assign(window, {
