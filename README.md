@@ -180,6 +180,16 @@
 ### 애니메이션
 - 화면 전환: `fadeUp` (opacity 0→1, translateY 8px→0, duration 0.4s ease)
 - 예약완료 체크: `checkPop` (scale 0→1.15→1, duration 0.5s)
+- 공간 캐러셀: `spaceScroll` (PC 56s / 모바일 44s, linear infinite, hover 시 일시정지)
+  - `prefers-reduced-motion` 설정 시 애니메이션을 끄고 손가락으로 넘기는 스냅 스크롤로 전환
+
+### 모바일 하단 바
+랜딩의 `회원가입하기 / 예약하기`와 로그인 후의 `홈 / 예약내역 / 내 정보` 탭은
+모바일에서 화면 아래에 딱 붙는 고정 바로 표시됩니다 (네이티브 앱 방식).
+
+- `position: fixed; left/right/bottom: 0`, 모서리 둥글기 없음, 상단에 1px 구분선
+- `env(safe-area-inset-bottom)`으로 아이폰 홈 인디케이터 영역까지 여백 확보
+- `backdrop-filter`는 쓰지 않습니다 — 모바일에서 스크롤할 때 바가 떨리는 원인이 됩니다
 
 ### 등급 조건부 UI
 - VVIP일 때만: 예약화면의 공간대여 안내 박스 표시
@@ -218,10 +228,14 @@ interface AppState {
 
 | 파일 | 용도 | 사이즈 |
 |------|------|--------|
-| `uploads/hero.png` | 랜딩 히어로 배경 | 750×400px |
-| `uploads/space-1~4.png` | 공간 소개 이미지 (현재 4장) | 600×340px |
+| `uploads/hero.jpg` | 랜딩 히어로 배경 | 1920×900px · 123KB |
+| `uploads/space-1~4.jpg` | 공간 소개 이미지 (현재 4장) | 1280×800px · 각 130~165KB |
 
 > 공간 사진은 `app.js`의 `spaceImages` 배열에서 개수 제한 없이 늘리거나 줄일 수 있습니다.
+
+**이미지는 반드시 JPEG로, 가로 1280px 이하로 넣어 주세요.**
+원본 PNG(장당 약 2MB)를 그대로 쓰면 휴대폰에서 사진이 다 내려받아지기 전에 캐러셀이 지나가 버려서
+빈 화면이 보입니다. 현재는 전체 이미지 용량이 9.9MB → 0.7MB로 줄어든 상태입니다.
 
 ---
 
@@ -291,3 +305,7 @@ python -m http.server 8777
 ### 실내 공간 사진 교체
 랜딩의 공간 소개 캐러셀 이미지는 `app.js` 상단의 `spaceImages` 배열에서 관리합니다.
 사진 파일을 `uploads/` 폴더에 넣고 `{ src: "uploads/파일명.jpg", alt: "설명" }` 항목을 원하는 개수만큼 추가하면 자동으로 느리게 스크롤됩니다.
+
+캐러셀은 이미지 배열을 두 번 이어 붙여 무한 루프를 만듭니다.
+이동 거리는 `styles.css`의 `--space-gap` 변수를 기준으로 계산되므로,
+간격을 바꿀 때는 `gap` 값을 직접 쓰지 말고 반드시 `--space-gap`만 고쳐야 루프가 어긋나지 않습니다.

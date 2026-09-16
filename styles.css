@@ -183,7 +183,7 @@ li,
   justify-content: center;
   background:
     linear-gradient(120deg, rgba(13, 27, 62, 0.9), rgba(13, 27, 62, 0.36)),
-    url("./uploads/hero.png") center / cover;
+    url("./uploads/hero.jpg") center / cover;
   color: #fff;
 }
 
@@ -419,9 +419,10 @@ li,
 }
 
 .space-track {
+  --space-gap: 18px;
   display: flex;
   width: max-content;
-  gap: 18px;
+  gap: var(--space-gap);
   animation: spaceScroll 56s linear infinite;
 }
 
@@ -451,7 +452,23 @@ li,
     transform: translateX(0);
   }
   to {
-    transform: translateX(calc(-50% - 9px));
+    transform: translateX(calc(-50% - (var(--space-gap) / 2)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-track {
+    animation: none;
+  }
+
+  .space-gallery {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .space-slide {
+    scroll-snap-align: start;
   }
 }
 
@@ -829,7 +846,7 @@ th {
   }
 
   .landing-page {
-    padding-bottom: 88px;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   .grid.two,
@@ -851,7 +868,7 @@ th {
   }
 
   .space-track {
-    gap: 12px;
+    --space-gap: 12px;
     animation-duration: 44s;
   }
 
@@ -877,7 +894,7 @@ th {
 
   .app-shell {
     display: block;
-    padding-bottom: 88px;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   .sidebar {
@@ -894,17 +911,16 @@ th {
 
   .mobile-tabs {
     position: fixed;
-    left: 16px;
-    right: 16px;
-    bottom: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 30;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    min-height: 64px;
+    min-height: 58px;
     background: #fff;
-    border: 1px solid rgba(13, 27, 62, 0.08);
-    border-radius: 24px;
-    box-shadow: 0 16px 40px rgba(13, 27, 62, 0.14);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 16px rgba(13, 27, 62, 0.06);
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
   }
 
@@ -915,7 +931,7 @@ th {
     justify-content: center;
     gap: 3px;
     border: 0;
-    border-radius: 18px;
+    border-radius: 12px;
     background: transparent;
     color: var(--muted);
     font-size: 11px;
@@ -928,7 +944,7 @@ th {
   }
 
   .mobile-tabs button.active {
-    background: var(--tint);
+    background: transparent;
     color: var(--navy);
   }
 
@@ -1018,27 +1034,29 @@ th {
 
   .landing-mobile-cta {
     position: fixed;
-    left: 16px;
-    right: 16px;
-    bottom: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 40;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    padding: 8px;
-    border: 1px solid rgba(13, 27, 62, 0.08);
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 16px 40px rgba(13, 27, 62, 0.16);
-    backdrop-filter: blur(16px);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    background: #fff;
+    box-shadow: 0 -2px 16px rgba(13, 27, 62, 0.06);
   }
 
   .landing-mobile-cta .primary-btn,
   .landing-mobile-cta .secondary-btn {
-    min-height: 52px;
+    min-height: 48px;
     padding: 0 10px;
-    border-radius: 18px;
+    border-radius: 12px;
     font-size: 14px;
+  }
+
+  .landing-mobile-cta .secondary-btn {
+    background: var(--soft);
   }
 
   .content {

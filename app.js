@@ -49,10 +49,10 @@ const state = {
 window.state = state;
 
 const spaceImages = [
-  { src: "uploads/space-1.png", alt: "명량아너스클럽 실내 공간 사진 1" },
-  { src: "uploads/space-2.png", alt: "명량아너스클럽 실내 공간 사진 2" },
-  { src: "uploads/space-3.png", alt: "명량아너스클럽 실내 공간 사진 3" },
-  { src: "uploads/space-4.png", alt: "명량아너스클럽 실내 공간 사진 4" },
+  { src: "uploads/space-1.jpg", alt: "명량아너스클럽 실내 공간 사진 1" },
+  { src: "uploads/space-2.jpg", alt: "명량아너스클럽 실내 공간 사진 2" },
+  { src: "uploads/space-3.jpg", alt: "명량아너스클럽 실내 공간 사진 3" },
+  { src: "uploads/space-4.jpg", alt: "명량아너스클럽 실내 공간 사진 4" },
 ];
 
 const venue = {
@@ -381,7 +381,9 @@ function spaceCarousel(images) {
       <div class="space-track" style="--space-count:${images.length};">
         ${items.map((image, index) => `
           <figure class="space-slide" ${index >= images.length ? "aria-hidden=\"true\"" : ""}>
-            <img src="${image.src}" alt="${image.alt}" loading="lazy" />
+            <img src="${image.src}" alt="${index >= images.length ? "" : image.alt}"
+                 ${index >= images.length ? 'aria-hidden="true"' : ""}
+                 loading="eager" decoding="async" />
           </figure>
         `).join("")}
       </div>
