@@ -60,6 +60,14 @@ li,
   text-wrap: pretty;
 }
 
+.spec-note {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
 /* 한 덩어리로 읽어야 하는 문구를 묶을 때 쓴다 (예: 시간 범위, 게스트 수) */
 .nowrap {
   white-space: nowrap;
@@ -1103,7 +1111,8 @@ th {
   line-height: 1.7;
 }
 
-.location-meta {
+.location-meta,
+.spec-list {
   margin: 18px 0 0;
   padding: 16px 0 0;
   border-top: 1px solid var(--border);
@@ -1111,12 +1120,14 @@ th {
   gap: 14px;
 }
 
-.location-meta > div {
+.location-meta > div,
+.spec-list > div {
   display: grid;
   gap: 4px;
 }
 
-.location-meta dt {
+.location-meta dt,
+.spec-list dt {
   margin: 0;
   font-family: "Barlow Condensed", "Pretendard", sans-serif;
   font-size: 11px;
@@ -1126,7 +1137,8 @@ th {
   color: var(--muted);
 }
 
-.location-meta dd {
+.location-meta dd,
+.spec-list dd {
   margin: 0;
   color: var(--text);
   font-size: 15px;

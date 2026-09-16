@@ -62,7 +62,7 @@ const venue = {
   name: "명량아너스클럽",
   address: "서울특별시 강서구 개화동로27가길 33 (방화동) 지하 2층",
   searchQuery: "서울특별시 강서구 개화동로27가길 33",
-  hours: "오후 6:00 ~ 오후 10:00 · 1회 3시간 단위",
+  hours: "매주 오후 6:00 ~ 오후 10:00",
   contacts: [
     { role: "사무국장", name: "김지현", phone: "010-4245-5871" },
     { role: "사무총장", name: "윤형관", phone: "010-5495-6465" },
@@ -265,22 +265,31 @@ function landing() {
             <p>이용 목적과 혜택 범위에 맞춰 VIP 또는 VVIP 등급을 선택할 수 있습니다.</p>
           </div>
           <div class="membership-grid">
-            ${gradeCard("VIP", "연회비 300,000원", ["게스트 동반 10명 이내", "음식물 및 음료 반입 가능", "오후 6시부터 10시까지 이용"], false)}
-            ${gradeCard("VVIP", "연회비 1,000,000원", ["VIP 모든 혜택 포함", "단체 행사 공간 대여", "교육 프로그램 50% 할인"], true)}
+            ${gradeCard("VIP", "연회비 300,000원", [
+              "게스트 동반입장 가능 (10명 이내)",
+              "음식물, 음료 반입 가능",
+            ], false)}
+            ${gradeCard("VVIP", "연회비 1,000,000원", [
+              "게스트 동반입장 가능 (10명 이내)",
+              "음식물, 음료 반입 가능",
+              "단체행사 공간 대여 가능",
+              "무용 · 노래 · 인스트루먼트 교육 50% 할인",
+            ], true)}
           </div>
         </section>
+        ${guestAndRentalSection()}
         <section class="section grid three">
           <div class="card pad">
             <div class="card-icon">${icon("check")}</div>
             <p class="section-label">QUALIFICATION</p>
             <h3>가입 자격</h3>
-            <p class="section-desc">운영위원회 승인을 받은 문화예술 회원</p>
+            <p class="section-desc">음악과 예술을 사랑하는 남녀 중 운영위원회 승인을 받은 자</p>
           </div>
           <div class="card pad">
             <div class="card-icon">${icon("clock")}</div>
             <p class="section-label">HOURS</p>
             <h3>운영 시간</h3>
-            <p class="section-desc">오후 6:00~10:00 운영 · 1회 3시간 단위</p>
+            <p class="section-desc">매주 오후 6:00 ~ 오후 10:00</p>
           </div>
           <div class="card pad">
             <div class="card-icon">${icon("phone")}</div>
@@ -292,6 +301,60 @@ function landing() {
         ${locationSection()}
       </div>
     </main>
+  `;
+}
+
+// 회원 모집 안내문의 '동반게스트 이용 안내'와 '공간대여' 항목.
+// 금액·시간은 안내문 원본 기준이므로 임의로 고치지 말 것.
+const guestPolicy = [
+  ["이용료", "1인당 10,000원", "VIP · VVIP 동일"],
+  ["이용 시간", "VIP 3시간 · VVIP 무제한", ""],
+  ["동반 인원", "10명 이내", ""],
+];
+
+const rentalPolicy = [
+  ["대여 시간", "오전 10:00 ~ 오후 10:00", ""],
+  ["이용 단위", "1회 3시간", ""],
+  ["이용료", "1인당 10,000원", ""],
+  ["제공", "커피 · 음료 무료 제공", ""],
+];
+
+function specList(rows) {
+  return `
+    <dl class="spec-list">
+      ${rows.map(([label, value, note]) => `
+        <div>
+          <dt>${label}</dt>
+          <dd>${value}${note ? `<span class="spec-note">${note}</span>` : ""}</dd>
+        </div>
+      `).join("")}
+    </dl>
+  `;
+}
+
+function guestAndRentalSection() {
+  return `
+    <section class="section">
+      <div class="section-head centered">
+        <div>
+          <p class="section-label">GUEST &amp; RENTAL</p>
+          <h2>동반 게스트 · 공간 대여</h2>
+        </div>
+        <p>회원과 함께 오시는 게스트, 그리고 단체 행사를 위한 공간 대여 안내입니다.</p>
+      </div>
+      <div class="grid two">
+        <div class="card pad">
+          <div class="card-icon">${icon("people")}</div>
+          <h3>동반 게스트</h3>
+          ${specList(guestPolicy)}
+        </div>
+        <div class="card pad">
+          <div class="card-icon">${icon("calendar")}</div>
+          <h3>공간 대여</h3>
+          ${specList(rentalPolicy)}
+        </div>
+      </div>
+    </section>
   `;
 }
 
