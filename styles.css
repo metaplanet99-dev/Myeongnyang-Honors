@@ -390,7 +390,24 @@ li,
 .space-gallery {
   position: relative;
   margin-top: 24px;
-  overflow: hidden;
+}
+
+.space-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.space-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.space-viewport:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 3px;
 }
 
 .space-gallery::before,
@@ -419,11 +436,6 @@ li,
   display: flex;
   width: max-content;
   gap: var(--space-gap);
-  animation: spaceScroll 56s linear infinite;
-}
-
-.space-gallery:hover .space-track {
-  animation-play-state: paused;
 }
 
 .space-slide {
@@ -441,31 +453,6 @@ li,
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-@keyframes spaceScroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50% - (var(--space-gap) / 2)));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .space-track {
-    animation: none;
-  }
-
-  .space-gallery {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .space-slide {
-    scroll-snap-align: start;
-  }
 }
 
 .app-shell {
@@ -855,7 +842,6 @@ th {
   .space-gallery {
     margin-left: -14px;
     margin-right: -14px;
-    padding-left: 14px;
   }
 
   .space-gallery::before,
@@ -865,7 +851,6 @@ th {
 
   .space-track {
     --space-gap: 12px;
-    animation-duration: 44s;
   }
 
   .space-slide {

@@ -49,11 +49,13 @@ const state = {
 
 window.state = state;
 
+// small은 휴대폰용(800px), src는 PC용(1280px).
+// 폰에서 큰 사진을 받아 펼치면 메모리를 많이 써서 브라우저가 이미지를 버리는 일이 생긴다.
 const spaceImages = [
-  { src: "uploads/space-1.jpg", alt: "명량아너스클럽 실내 공간 사진 1" },
-  { src: "uploads/space-2.jpg", alt: "명량아너스클럽 실내 공간 사진 2" },
-  { src: "uploads/space-3.jpg", alt: "명량아너스클럽 실내 공간 사진 3" },
-  { src: "uploads/space-4.jpg", alt: "명량아너스클럽 실내 공간 사진 4" },
+  { src: "uploads/space-1.jpg", small: "uploads/space-1-800.jpg", alt: "명량아너스클럽 실내 공간 사진 1" },
+  { src: "uploads/space-2.jpg", small: "uploads/space-2-800.jpg", alt: "명량아너스클럽 실내 공간 사진 2" },
+  { src: "uploads/space-3.jpg", small: "uploads/space-3-800.jpg", alt: "명량아너스클럽 실내 공간 사진 3" },
+  { src: "uploads/space-4.jpg", small: "uploads/space-4-800.jpg", alt: "명량아너스클럽 실내 공간 사진 4" },
 ];
 
 const venue = {
@@ -377,18 +379,86 @@ window.copyAddress = copyAddress;
 function spaceCarousel(images) {
   const items = images.length > 1 ? [...images, ...images] : images;
   return `
-    <div class="space-gallery" aria-label="실내 공간 사진">
-      <div class="space-track" style="--space-count:${images.length};">
-        ${items.map((image, index) => `
-          <figure class="space-slide" ${index >= images.length ? "aria-hidden=\"true\"" : ""}>
-            <img src="${image.src}" alt="${index >= images.length ? "" : image.alt}"
-                 ${index >= images.length ? 'aria-hidden="true"' : ""}
-                 loading="eager" decoding="async" />
-          </figure>
-        `).join("")}
+    <div class="space-gallery">
+      <div class="space-viewport" aria-label="실내 공간 사진" tabindex="0">
+        <div class="space-track">
+          ${items.map((image, index) => `
+            <figure class="space-slide" ${index >= images.length ? "aria-hidden=\"true\"" : ""}>
+              <img src="${image.src}"
+                   ${image.small ? `srcset="${image.small} 800w, ${image.src} 1280w"` : ""}
+                   sizes="(max-width: 900px) 82vw, 45vw"
+                   alt="${index >= images.length ? "" : image.alt}"
+                   ${index >= images.length ? 'aria-hidden="true"' : ""}
+                   loading="eager" decoding="async" draggable="false" />
+            </figure>
+          `).join("")}
+        </div>
       </div>
     </div>
   `;
+}
+
+// 공간 이미지 자동 스크롤.
+// CSS transform(-50%) 방식은 모바일에서 두 가지로 깨졌다.
+//  1) -50%를 max-content 너비 기준으로 계산하다 몇 바퀴 뒤 위치가 틀어짐
+//  2) 2500px가 넘는 합성 레이어의 이미지 메모리를 브라우저가 중간에 버림
+// 그래서 실제 scrollLeft를 픽셀 단위로 움직이는 방식으로 바꿨다.
+// 퍼센트 계산이 없고, 화면 밖 영역은 브라우저가 알아서 관리하므로 안정적이다.
+let carouselFrame = null;
+
+function stopCarousel() {
+  if (carouselFrame !== null) cancelAnimationFrame(carouselFrame);
+  carouselFrame = null;
+}
+
+function startCarousel() {
+  stopCarousel();
+
+  const viewport = document.querySelector(".space-viewport");
+  const track = viewport && viewport.querySelector(".space-track");
+  if (!viewport || !track || track.children.length < 2) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const SPEED = 26; // 초당 이동 픽셀
+  let position = 0;
+  let last = null;
+  let held = false;
+
+  const loopWidth = () => track.scrollWidth / 2;
+
+  const hold = () => { held = true; };
+  const release = () => { held = false; };
+  viewport.addEventListener("pointerdown", hold);
+  viewport.addEventListener("pointerup", release);
+  viewport.addEventListener("pointercancel", release);
+  viewport.addEventListener("pointerleave", release);
+  viewport.addEventListener("mouseenter", hold);
+  viewport.addEventListener("mouseleave", release);
+  viewport.addEventListener("focusin", hold);
+  viewport.addEventListener("focusout", release);
+
+  const step = (now) => {
+    const width = loopWidth();
+    if (width > 0) {
+      if (last === null) last = now;
+      const elapsed = Math.min((now - last) / 1000, 0.1);
+      last = now;
+
+      if (held || document.hidden) {
+        // 손가락으로 넘기는 중이면 현재 위치를 그대로 따라간다.
+        position = viewport.scrollLeft;
+      } else {
+        position += SPEED * elapsed;
+      }
+
+      if (position >= width) position -= width;
+      if (position < 0) position += width;
+      viewport.scrollLeft = position;
+    }
+    carouselFrame = requestAnimationFrame(step);
+  };
+
+  carouselFrame = requestAnimationFrame(step);
 }
 
 function gradeCard(title, price, benefits, gold) {
@@ -952,6 +1022,7 @@ function render() {
   const view = views[state.route] || landing;
   const isAdmin = state.route.startsWith("admin");
   app.innerHTML = `<div class="app">${view()}${isAdmin ? "" : mobileTabBar()}</div>`;
+  startCarousel();
 }
 
 Object.assign(window, {
