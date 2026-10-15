@@ -2,15 +2,43 @@ const app = document.querySelector("#app");
 
 // 데모 데이터를 '오늘' 기준으로 만든다. 그래야 만료 임박이 항상 의미가 있다.
 const TODAY = new Date();
+
+// toISOString()은 UTC로 변환해 한국 시간 기준으로 하루가 밀린다.
+// 날짜만 다룰 때는 로컬 기준으로 직접 문자열을 만든다.
+function toYMD(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 function dayOffset(n) {
   const d = new Date(TODAY);
   d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  return toYMD(d);
 }
+// 게스트 이용료 입금 계좌.
+// TODO: 재단에서 실제 계좌를 받으면 교체할 것. 지금 번호는 화면 확인용이다.
+const bankAccount = {
+  bank: "국민은행",
+  number: "123456-78-901234",
+  holder: "(재)명량문화재단",
+};
+
+const GUEST_FEE = 10000;
+
+// 입금 기한은 이용일 '전날'까지.
+function dueDateFor(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString + "T00:00:00");
+  d.setDate(d.getDate() - 1);
+  return toYMD(d);
+}
+
 function daysUntil(dateString) {
   if (!dateString) return null;
   const d = new Date(dateString + "T00:00:00");
-  const t = new Date(TODAY.toISOString().slice(0, 10) + "T00:00:00");
+  const t = new Date(toYMD(TODAY) + "T00:00:00");
   return Math.round((d - t) / 86400000);
 }
 
@@ -54,12 +82,19 @@ const state = {
     { id: 8, name: "장민호", grade: "VIP", phone: "010-6612-3380", paid: true, joinedAt: dayOffset(-280), expiresAt: dayOffset(85), memo: "" },
   ],
   bookings: [
-    { id: 1, memberId: 1, member: "홍길동", date: dayOffset(2), time: "오후 6:00 ~ 오후 9:00", guests: 2, status: "확정" },
-    { id: 2, memberId: 2, member: "정하늘", date: dayOffset(4), time: "오후 7:00 ~ 오후 10:00", guests: 0, status: "신청" },
-    { id: 3, memberId: 4, member: "김도윤", date: dayOffset(5), time: "오후 6:00 ~ 오후 9:00", guests: 4, status: "신청" },
-    { id: 4, memberId: 1, member: "홍길동", date: dayOffset(-9), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료" },
-    { id: 5, memberId: 3, member: "문소리", date: dayOffset(-25), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료" },
-    { id: 6, memberId: 5, member: "박서진", date: dayOffset(-40), time: "오후 7:00 ~ 오후 10:00", guests: 3, status: "완료" },
+    // 입금 완료 -> 확정
+    { id: 1, memberId: 1, member: "홍길동", date: dayOffset(6), time: "오후 6:00 ~ 오후 9:00", guests: 2, status: "확정", paid: true },
+    // 게스트 없음 -> 낼 돈이 없어 바로 확정
+    { id: 2, memberId: 2, member: "정하늘", date: dayOffset(4), time: "오후 7:00 ~ 오후 10:00", guests: 0, status: "확정", paid: true },
+    // 입금 대기 (기한 여유)
+    { id: 3, memberId: 4, member: "김도윤", date: dayOffset(5), time: "오후 6:00 ~ 오후 9:00", guests: 4, status: "입금대기", paid: false },
+    // 입금 대기 (기한 오늘까지 - 독촉 대상)
+    { id: 7, memberId: 7, member: "최은비", date: dayOffset(1), time: "오후 6:00 ~ 오후 9:00", guests: 6, status: "입금대기", paid: false },
+    // 기한 지남 -> 취소 예정
+    { id: 8, memberId: 8, member: "장민호", date: dayOffset(-1), time: "오후 7:00 ~ 오후 10:00", guests: 3, status: "입금대기", paid: false },
+    { id: 4, memberId: 1, member: "홍길동", date: dayOffset(-9), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료", paid: true },
+    { id: 5, memberId: 3, member: "문소리", date: dayOffset(-25), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료", paid: true },
+    { id: 6, memberId: 5, member: "박서진", date: dayOffset(-40), time: "오후 7:00 ~ 오후 10:00", guests: 3, status: "완료", paid: true },
   ],
   messages: [
     { id: 1, memberId: 3, name: "문소리", phone: "010-9981-5512", kind: "만료 안내", auto: true, sentAt: dayOffset(-44), text: "문소리님의 VIP 회원 기간이 곧 만료됩니다. 연회비 안내드립니다." },
@@ -107,6 +142,7 @@ const routes = {
   ],
   admin: [
     ["admin", "관리자 홈"],
+    ["admin-payments", "입금 확인"],
     ["admin-members", "회원 명단"],
     ["admin-approvals", "가입 승인"],
     ["admin-bookings", "예약 현황"],
@@ -166,14 +202,20 @@ function submitReservation() {
     alert("날짜와 시간을 선택해 주세요.");
     return;
   }
-  state.bookings.unshift({
+  const guests = state.reservation.guests;
+  const booking = {
     id: Date.now(),
+    memberId: state.member.id || 1,
     member: state.member.name,
     date: state.reservation.date,
     time: state.reservation.time,
-    guests: state.reservation.guests,
-    status: "신청",
-  });
+    guests,
+    // 게스트가 없으면 낼 돈이 없으므로 바로 확정된다.
+    status: guests > 0 ? "입금대기" : "확정",
+    paid: guests === 0,
+  };
+  state.bookings.unshift(booking);
+  state.lastBookingId = booking.id;
   setRoute("confirm");
 }
 
@@ -828,16 +870,37 @@ function reservation() {
 
 function confirm() {
   const r = state.reservation;
+  const amount = r.guests * GUEST_FEE;
+  const due = dueDateFor(r.date);
   return shell("member", `
     <section class="card pad" style="max-width:720px;margin:0 auto;text-align:center;">
       <div style="width:64px;height:64px;border-radius:16px;background:#ecfdf5;color:var(--green);display:grid;place-items:center;margin:0 auto 18px;">${icon("check")}</div>
       <h1>예약 신청이 완료되었습니다.</h1>
-      <p class="section-desc">운영진 확인 후 예약 상태가 확정됩니다.</p>
+      <p class="section-desc">${amount ? "아래 계좌로 입금해 주시면 예약이 확정됩니다." : "게스트 동반이 없어 추가 비용 없이 확정되었습니다."}</p>
+
       <div class="card pad" style="box-shadow:none;text-align:left;margin:22px 0;">
         <div class="row"><span>날짜</span><strong>${formatDate(r.date)}</strong></div>
         <div class="row"><span>시간</span><strong>${r.time}</strong></div>
         <div class="row"><span>게스트</span><strong>${r.guests}명</strong></div>
       </div>
+
+      ${amount ? `
+        <div class="pay-box">
+          <p class="pay-label">입금하실 금액</p>
+          <p class="pay-amount">${won(amount)}</p>
+          <p class="pay-sub">게스트 ${r.guests}명 × ${won(GUEST_FEE)}</p>
+
+          <dl class="spec-list">
+            <div><dt>입금 계좌</dt><dd>${bankAccount.bank} ${bankAccount.number}</dd></div>
+            <div><dt>예금주</dt><dd>${bankAccount.holder}</dd></div>
+            <div><dt>입금자명</dt><dd><strong>${state.member.name}</strong> (회원 본인 이름으로 입금해 주세요)</dd></div>
+            <div><dt>입금 기한</dt><dd><strong>${formatDate(due)}</strong>까지</dd></div>
+          </dl>
+
+          <p class="pay-warn">${icon("clock")}기한까지 입금이 확인되지 않으면 예약이 자동으로 취소됩니다.</p>
+        </div>
+      ` : ""}
+
       <button class="primary-btn" onclick="setRoute('home')">${icon("home")}홈으로</button>
     </section>
   `);
@@ -860,15 +923,27 @@ function reservations() {
 }
 
 function bookingCard(item) {
-  const badge = item.status === "완료" ? "" : item.status === "확정" ? "green" : "gold";
+  const badge = item.status === "확정" ? "green"
+    : item.status === "입금대기" ? "gold"
+    : item.status === "취소" ? "red" : "";
+  const amount = item.guests * GUEST_FEE;
+  const due = dueDateFor(item.date);
+  const left = daysUntil(due);
   return `
-    <article class="card pad">
+    <article class="card pad ${item.status === "취소" ? "is-cancelled" : ""}">
       <div class="row">
         <span>${formatDate(item.date)}</span>
         <strong><span class="pill ${badge}">${item.status}</span></strong>
       </div>
       <div class="row"><span>시간</span><strong>${item.time}</strong></div>
       <div class="row"><span>게스트</span><strong>${item.guests ? `${item.guests}명 동반` : "없음"}</strong></div>
+      ${amount ? `<div class="row"><span>게스트 이용료</span><strong>${won(amount)}</strong></div>` : ""}
+      ${item.status === "입금대기" ? `
+        <div class="pay-notice">
+          ${icon("clock")}
+          <span><strong>${formatDate(due)}</strong>까지 입금해 주세요${left !== null && left >= 0 ? ` (${left === 0 ? "오늘" : "D-" + left})` : ""}<br />
+          ${bankAccount.bank} ${bankAccount.number} · 예금주 ${bankAccount.holder}</span>
+        </div>` : ""}
     </article>
   `;
 }
@@ -967,7 +1042,14 @@ function adminStats() {
       return d !== null && d >= 0 && d <= 7;
     })
     .sort((a, b) => daysUntil(a.date) - daysUntil(b.date));
-  return { expiring, unpaid, pending, upcoming };
+  // 입금 대기 = 게스트 이용료를 아직 못 받은 예약
+  const awaiting = state.bookings
+    .filter((b) => b.status === "입금대기")
+    .sort((a, b) => (dueDateFor(a.date) < dueDateFor(b.date) ? -1 : 1));
+  // 기한이 지났는데도 입금이 없는 건. 바로 취소하지 않고 담당자 확인을 받는다.
+  const overdue = awaiting.filter((b) => daysUntil(dueDateFor(b.date)) < 0);
+  const awaitingAmount = awaiting.reduce((sum, b) => sum + b.guests * GUEST_FEE, 0);
+  return { expiring, unpaid, pending, upcoming, awaiting, overdue, awaitingAmount };
 }
 
 function statCard(label, count, unit, route, tone) {
@@ -995,7 +1077,7 @@ function sentBadge(memberId, kind) {
 }
 
 function adminHome() {
-  const { expiring, unpaid, pending, upcoming } = adminStats();
+  const { expiring, unpaid, pending, upcoming, awaiting, overdue } = adminStats();
   return shell("admin", `
     <div class="view-title">
       <div>
@@ -1006,13 +1088,26 @@ function adminHome() {
     </div>
 
     <section class="stat-row">
+      ${statCard("입금 확인 필요", awaiting.length, "건", "admin-payments", awaiting.length ? "warn" : "")}
+      ${statCard("기한 지남", overdue.length, "건", "admin-payments", overdue.length ? "danger" : "")}
       ${statCard("만료 임박", expiring.length, "명", "admin-members", expiring.length ? "warn" : "")}
-      ${statCard("회비 미납", unpaid.length, "명", "admin-members", unpaid.length ? "danger" : "")}
       ${statCard("가입 승인 대기", pending.length, "명", "admin-approvals", pending.length ? "danger" : "")}
-      ${statCard("이번 주 예약", upcoming.length, "건", "admin-bookings", "")}
     </section>
 
     <section class="panel-grid">
+      <div class="card panel ${overdue.length ? "panel-alert" : ""}">
+        <div class="panel-head">
+          <h3>${icon("money")}게스트 이용료 입금 확인</h3>
+          <span class="panel-note">통장 확인 후 눌러 주세요</span>
+        </div>
+        ${awaiting.length ? `
+          <div class="panel-list">
+            ${awaiting.slice(0, 5).map((b) => paymentRow(b)).join("")}
+          </div>
+          ${awaiting.length > 5 ? `<p class="panel-note" style="padding:10px 0;">외 ${awaiting.length - 5}건 · <button class="link-btn" onclick="setRoute('admin-payments')">전체 보기</button></p>` : ""}
+        ` : `<p class="panel-empty">입금 확인이 필요한 예약이 없습니다.</p>`}
+      </div>
+
       <div class="card panel">
         <div class="panel-head">
           <h3>${icon("clock")}연회비 만료 임박</h3>
@@ -1114,6 +1209,159 @@ function adminHome() {
       </div>
     </section>
   `);
+}
+
+// 입금 대기 한 건을 보여주는 줄. 통장과 대조하기 쉽도록
+// '입금자명(회원 이름)'과 '금액'을 가장 크게 보여준다.
+function paymentRow(b) {
+  const amount = b.guests * GUEST_FEE;
+  const due = dueDateFor(b.date);
+  const left = daysUntil(due);
+  const isOverdue = left < 0;
+  return `
+    <div class="panel-row ${isOverdue ? "row-overdue" : ""}">
+      <div class="panel-row-main">
+        <strong>${b.member}</strong>
+        <span class="pay-amount-inline">${won(amount)}</span>
+        ${isOverdue
+          ? `<span class="pill red">기한 ${-left}일 지남</span>`
+          : left === 0
+            ? `<span class="pill gold">오늘까지</span>`
+            : `<span class="pill gold">D-${left}</span>`}
+      </div>
+      <div class="panel-row-sub">
+        <span>이용 ${formatDate(b.date)} · 게스트 ${b.guests}명 · 입금 기한 ${formatDate(due)}</span>
+      </div>
+      <div class="panel-row-actions">
+        <button class="mini-btn green" onclick="confirmPayment(${b.id})">${icon("check")}입금 확인됨</button>
+        <button class="mini-btn primary" onclick="sendPaymentReminder(${b.id})">${icon("phone")}독촉 문자</button>
+        ${isOverdue ? `<button class="mini-btn danger" onclick="cancelUnpaid(${b.id})">${icon("x")}취소 처리</button>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function adminPayments() {
+  const { awaiting, overdue, awaitingAmount } = adminStats();
+  const paidRecently = state.bookings
+    .filter((b) => b.paid && b.guests > 0 && b.status !== "취소")
+    .slice(0, 8);
+  return shell("admin", `
+    <div class="view-title">
+      <div>
+        <p class="section-label">ADMIN</p>
+        <h1>입금 확인</h1>
+        <p>게스트 이용료는 계좌이체로 받습니다. 통장에서 확인하신 뒤 아래에서 눌러 주세요.</p>
+      </div>
+    </div>
+
+    <section class="stat-row">
+      ${statCard("입금 확인 필요", awaiting.length, "건", "admin-payments", awaiting.length ? "warn" : "")}
+      ${statCard("기한 지남", overdue.length, "건", "admin-payments", overdue.length ? "danger" : "")}
+      <div class="stat-card">
+        <span class="stat-card-label">받을 금액 합계</span>
+        <strong class="stat-card-value">${won(awaitingAmount)}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-label">입금 계좌</span>
+        <strong class="stat-card-value" style="font-size:16px;line-height:1.5;">
+          ${bankAccount.bank} ${bankAccount.number}<br />
+          <em style="margin:0;">예금주 ${bankAccount.holder}</em>
+        </strong>
+      </div>
+    </section>
+
+    ${overdue.length ? `
+      <section class="card panel panel-alert" style="margin-bottom:14px;">
+        <div class="panel-head">
+          <h3>${icon("x")}기한이 지난 예약 ${overdue.length}건</h3>
+          <span class="panel-note">자동으로 취소하지 않습니다</span>
+        </div>
+        <p class="panel-empty" style="margin:12px 0;">
+          입금을 받으셨는데 확인을 못 누르신 경우가 있을 수 있어, 시스템이 임의로 취소하지 않습니다.
+          통장을 확인하신 뒤 <strong>입금 확인됨</strong> 또는 <strong>취소 처리</strong>를 눌러 주세요.
+        </p>
+        <div class="panel-row-actions" style="padding-bottom:14px;">
+          <button class="mini-btn danger" onclick="cancelAllOverdue()">${icon("x")}${overdue.length}건 모두 취소 처리</button>
+        </div>
+      </section>` : ""}
+
+    <section class="card panel">
+      <div class="panel-head">
+        <h3>${icon("money")}입금 대기</h3>
+        <span class="panel-note">기한이 급한 순서</span>
+      </div>
+      ${awaiting.length
+        ? `<div class="panel-list">${awaiting.map((b) => paymentRow(b)).join("")}</div>`
+        : `<p class="panel-empty">입금 확인이 필요한 예약이 없습니다.</p>`}
+    </section>
+
+    <section class="card table-wrap" style="margin-top:14px;">
+      <table>
+        <thead><tr><th>회원</th><th>이용일</th><th>게스트</th><th>금액</th><th>상태</th></tr></thead>
+        <tbody>
+          ${paidRecently.map((b) => `
+            <tr>
+              <td>${b.member}</td>
+              <td>${formatDate(b.date)}</td>
+              <td>${b.guests}명</td>
+              <td>${won(b.guests * GUEST_FEE)}</td>
+              <td><span class="pill green">입금 완료</span></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </section>
+  `);
+}
+
+function confirmPayment(id) {
+  const b = state.bookings.find((x) => x.id === id);
+  if (!b) return;
+  b.paid = true;
+  b.status = "확정";
+  const m = state.members.find((x) => x.id === b.memberId);
+  if (m) {
+    logMessage(m, "예약 확정",
+      `${m.name}님, 입금이 확인되어 예약이 확정되었습니다. ${formatDate(b.date)} ${b.time}`, true);
+  }
+  render();
+}
+
+function sendPaymentReminder(id) {
+  const b = state.bookings.find((x) => x.id === id);
+  if (!b) return;
+  const m = state.members.find((x) => x.id === b.memberId);
+  if (!m) return;
+  logMessage(m, "입금 독촉",
+    `${m.name}님, ${formatDate(b.date)} 예약의 게스트 이용료 ${won(b.guests * GUEST_FEE)}이 아직 입금되지 않았습니다. ${formatDate(dueDateFor(b.date))}까지 입금해 주세요.`,
+    false);
+  render();
+}
+
+function cancelUnpaid(id) {
+  const b = state.bookings.find((x) => x.id === id);
+  if (!b) return;
+  b.status = "취소";
+  const m = state.members.find((x) => x.id === b.memberId);
+  if (m) {
+    logMessage(m, "예약 취소",
+      `${m.name}님, ${formatDate(b.date)} 예약이 입금 기한 경과로 취소되었습니다.`, true);
+  }
+  render();
+}
+
+function cancelAllOverdue() {
+  const { overdue } = adminStats();
+  overdue.forEach((b) => {
+    b.status = "취소";
+    const m = state.members.find((x) => x.id === b.memberId);
+    if (m) {
+      logMessage(m, "예약 취소",
+        `${m.name}님, ${formatDate(b.date)} 예약이 입금 기한 경과로 취소되었습니다.`, true);
+    }
+  });
+  render();
 }
 
 function filteredMembers() {
@@ -1481,6 +1729,7 @@ function render() {
     reservations,
     myinfo,
     admin: adminHome,
+    "admin-payments": adminPayments,
     "admin-members": adminMembers,
     "admin-approvals": adminApprovals,
     "admin-bookings": adminBookings,
@@ -1510,6 +1759,10 @@ Object.assign(window, {
   togglePaid,
   sendManual,
   confirmBooking,
+  confirmPayment,
+  sendPaymentReminder,
+  cancelUnpaid,
+  cancelAllOverdue,
   render,
 });
 

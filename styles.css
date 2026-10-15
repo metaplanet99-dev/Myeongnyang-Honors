@@ -1552,3 +1552,107 @@ th {
     white-space: normal;
   }
 }
+
+
+/* ---------- 입금 안내 (회원 화면) ---------- */
+.pay-box {
+  margin: 0 0 22px;
+  padding: 22px;
+  text-align: left;
+  border: 1.5px solid var(--navy);
+  border-radius: 14px;
+  background: var(--tint);
+}
+
+.pay-label {
+  margin: 0;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pay-amount {
+  margin: 4px 0 0;
+  color: var(--navy);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.pay-sub {
+  margin: 4px 0 0;
+  color: var(--sub);
+  font-size: 14px;
+}
+
+.pay-box .spec-list {
+  border-top-color: rgba(31, 58, 122, 0.2);
+}
+
+.pay-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(31, 58, 122, 0.2);
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.pay-warn svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  margin-top: 1px;
+}
+
+.pay-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff8e7;
+  border: 1px solid rgba(218, 150, 22, 0.35);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pay-notice svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--gold);
+}
+
+.card.is-cancelled {
+  opacity: 0.55;
+}
+
+/* ---------- 입금 확인 (관리자 화면) ---------- */
+.pay-amount-inline {
+  color: var(--navy);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.panel-alert {
+  border-color: rgba(217, 67, 67, 0.4);
+}
+
+.panel-alert .panel-head h3 svg {
+  color: var(--red);
+}
+
+.panel-row.row-overdue {
+  background: #fff5f5;
+  border-radius: 10px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
