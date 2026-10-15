@@ -1,5 +1,19 @@
 const app = document.querySelector("#app");
 
+// 데모 데이터를 '오늘' 기준으로 만든다. 그래야 만료 임박이 항상 의미가 있다.
+const TODAY = new Date();
+function dayOffset(n) {
+  const d = new Date(TODAY);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function daysUntil(dateString) {
+  if (!dateString) return null;
+  const d = new Date(dateString + "T00:00:00");
+  const t = new Date(TODAY.toISOString().slice(0, 10) + "T00:00:00");
+  return Math.round((d - t) / 86400000);
+}
+
 const state = {
   route: "landing",
   loginIntent: "signup",
@@ -30,15 +44,30 @@ const state = {
     { id: 3, name: "이서연", phone: "010-8422-1004", grade: "VIP", interests: "무용", status: "대기" },
   ],
   members: [
-    { id: 1, name: "홍길동", grade: "VVIP", phone: "010-4245-5871", paid: true, expiresAt: "2026-12-31" },
-    { id: 2, name: "정하늘", grade: "VIP", phone: "010-2401-1188", paid: true, expiresAt: "2026-10-31" },
-    { id: 3, name: "문소리", grade: "VIP", phone: "010-9981-5512", paid: false, expiresAt: "2026-08-31" },
+    { id: 1, name: "홍길동", grade: "VVIP", phone: "010-4245-5871", paid: true, joinedAt: dayOffset(-320), expiresAt: dayOffset(77), memo: "피아노 조율 요청하신 적 있음. 게스트 많이 동반하심." },
+    { id: 2, name: "정하늘", grade: "VIP", phone: "010-2401-1188", paid: true, joinedAt: dayOffset(-350), expiresAt: dayOffset(5), memo: "" },
+    { id: 3, name: "문소리", grade: "VIP", phone: "010-9981-5512", paid: false, joinedAt: dayOffset(-400), expiresAt: dayOffset(-14), memo: "연회비 미납. 9월에 통화함." },
+    { id: 4, name: "김도윤", grade: "VVIP", phone: "010-3388-2041", paid: true, joinedAt: dayOffset(-120), expiresAt: dayOffset(21), memo: "" },
+    { id: 5, name: "박서진", grade: "VIP", phone: "010-7742-6610", paid: true, joinedAt: dayOffset(-200), expiresAt: dayOffset(28), memo: "주로 평일 저녁 이용." },
+    { id: 6, name: "이수현", grade: "VIP", phone: "010-5510-7723", paid: false, joinedAt: dayOffset(-45), expiresAt: dayOffset(320), memo: "" },
+    { id: 7, name: "최은비", grade: "VVIP", phone: "010-2277-9034", paid: true, joinedAt: dayOffset(-60), expiresAt: dayOffset(305), memo: "단체 행사 문의 주심." },
+    { id: 8, name: "장민호", grade: "VIP", phone: "010-6612-3380", paid: true, joinedAt: dayOffset(-280), expiresAt: dayOffset(85), memo: "" },
   ],
   bookings: [
-    { id: 1, member: "홍길동", date: "2026-09-20", time: "오후 6:00 ~ 오후 9:00", guests: 2, status: "확정" },
-    { id: 2, member: "정하늘", date: "2026-09-22", time: "오후 7:00 ~ 오후 10:00", guests: 0, status: "신청" },
-    { id: 3, member: "문소리", date: "2026-08-15", time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료" },
+    { id: 1, memberId: 1, member: "홍길동", date: dayOffset(2), time: "오후 6:00 ~ 오후 9:00", guests: 2, status: "확정" },
+    { id: 2, memberId: 2, member: "정하늘", date: dayOffset(4), time: "오후 7:00 ~ 오후 10:00", guests: 0, status: "신청" },
+    { id: 3, memberId: 4, member: "김도윤", date: dayOffset(5), time: "오후 6:00 ~ 오후 9:00", guests: 4, status: "신청" },
+    { id: 4, memberId: 1, member: "홍길동", date: dayOffset(-9), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료" },
+    { id: 5, memberId: 3, member: "문소리", date: dayOffset(-25), time: "오후 6:00 ~ 오후 9:00", guests: 1, status: "완료" },
+    { id: 6, memberId: 5, member: "박서진", date: dayOffset(-40), time: "오후 7:00 ~ 오후 10:00", guests: 3, status: "완료" },
   ],
+  messages: [
+    { id: 1, memberId: 3, name: "문소리", phone: "010-9981-5512", kind: "만료 안내", auto: true, sentAt: dayOffset(-44), text: "문소리님의 VIP 회원 기간이 곧 만료됩니다. 연회비 안내드립니다." },
+    { id: 2, memberId: 5, name: "박서진", phone: "010-7742-6610", kind: "예약 확정", auto: true, sentAt: dayOffset(-41), text: "박서진님의 예약이 확정되었습니다." },
+    { id: 3, memberId: 7, name: "최은비", phone: "010-2277-9034", kind: "가입 승인", auto: true, sentAt: dayOffset(-60), text: "최은비님, 명량아너스클럽 VVIP 회원 가입이 승인되었습니다." },
+  ],
+  memberFilter: { q: "", grade: "전체", status: "전체" },
+  selectedMemberId: 1,
   adminForm: {
     name: "",
     phone: "",
@@ -78,10 +107,11 @@ const routes = {
   ],
   admin: [
     ["admin", "관리자 홈"],
+    ["admin-members", "회원 명단"],
     ["admin-approvals", "가입 승인"],
-    ["admin-register", "대신 등록"],
-    ["admin-fees", "회비 관리"],
     ["admin-bookings", "예약 현황"],
+    ["admin-messages", "문자 발송"],
+    ["admin-register", "회원 등록"],
     ["admin-settlement", "게스트 정산"],
   ],
 };
@@ -151,14 +181,18 @@ function approveApplication(id) {
   const application = state.applications.find((item) => item.id === id);
   if (!application) return;
   application.status = "승인";
-  state.members.push({
+  const member = {
     id: Date.now(),
     name: application.name,
     grade: application.grade,
     phone: application.phone,
     paid: false,
-    expiresAt: "2026-12-31",
-  });
+    joinedAt: dayOffset(0),
+    expiresAt: dayOffset(365),
+    memo: "",
+  };
+  state.members.push(member);
+  logMessage(member, "가입 승인", `${member.name}님, 명량아너스클럽 ${member.grade} 회원 가입이 승인되었습니다.`, true);
   render();
 }
 
@@ -175,16 +209,20 @@ function addMemberByAdmin() {
     alert("이름과 휴대폰 번호를 입력해 주세요.");
     return;
   }
-  state.members.unshift({
+  const member = {
     id: Date.now(),
     name: form.name.trim(),
     phone: form.phone.trim(),
     grade: form.grade,
     expiresAt: form.expiresAt,
+    joinedAt: dayOffset(0),
     paid: false,
-  });
-  state.adminForm = { name: "", phone: "", grade: "VIP", expiresAt: "2026-12-31" };
-  setRoute("admin-fees");
+    memo: "",
+  };
+  state.members.unshift(member);
+  state.adminForm = { name: "", phone: "", grade: "VIP", expiresAt: dayOffset(365) };
+  state.selectedMemberId = member.id;
+  setRoute("admin-members");
 }
 
 function formatDate(dateString) {
@@ -893,41 +931,408 @@ function myinfo() {
   `);
 }
 
-function adminHome() {
-  const pending = state.applications.filter((item) => item.status === "대기").length;
-  return shell("admin", `
-    <div class="view-title">
-      <div>
-        <p class="section-label">ADMIN</p>
-        <h1>관리자 홈</h1>
-        <p>가입 승인, 예약 현황, 회비와 게스트 정산을 관리합니다.</p>
-      </div>
-    </div>
-    <section class="grid three">
-      ${adminTile("가입 승인", `${pending}건 대기`, "admin-approvals", "people", pending ? "red" : "")}
-      ${adminTile("대신 등록", "회원 직접 등록", "admin-register", "plus")}
-      ${adminTile("회비 관리", "납부 및 만료일", "admin-fees", "money")}
-      ${adminTile("예약 현황", "신청 및 확정", "admin-bookings", "calendar")}
-      ${adminTile("게스트 정산", "이용료 합계", "admin-settlement", "check")}
-    </section>
-  `);
+// ---------------------------------------------------------------------------
+// 관리자 화면
+// 담당자 한 분이 그동안 엑셀로 하던 일(명단 정리, 만료 확인, 문자 발송)을
+// 대신하는 것이 목적이다. PC 기준으로 넓게 쓰고, 폰에서는 세로로 쌓인다.
+// ---------------------------------------------------------------------------
+
+const EXPIRY_SOON_DAYS = 30; // 만료 임박으로 볼 기준
+
+function logMessage(member, kind, text, auto) {
+  state.messages.unshift({
+    id: Date.now() + Math.random(),
+    memberId: member.id,
+    name: member.name,
+    phone: member.phone,
+    kind,
+    auto: !!auto,
+    sentAt: dayOffset(0),
+    text,
+  });
 }
 
-function adminTile(title, desc, route, iconName, badge) {
+function adminStats() {
+  const expiring = state.members
+    .filter((m) => {
+      const d = daysUntil(m.expiresAt);
+      return d !== null && d <= EXPIRY_SOON_DAYS;
+    })
+    .sort((a, b) => daysUntil(a.expiresAt) - daysUntil(b.expiresAt));
+  const unpaid = state.members.filter((m) => !m.paid);
+  const pending = state.applications.filter((a) => a.status === "대기");
+  const upcoming = state.bookings
+    .filter((b) => {
+      const d = daysUntil(b.date);
+      return d !== null && d >= 0 && d <= 7;
+    })
+    .sort((a, b) => daysUntil(a.date) - daysUntil(b.date));
+  return { expiring, unpaid, pending, upcoming };
+}
+
+function statCard(label, count, unit, route, tone) {
   return `
-    <button class="card pad" onclick="setRoute('${route}')" style="text-align:left;border-color:transparent;">
-      <div style="display:flex;justify-content:space-between;gap:12px;">
-        <div style="color:var(--navy);">${icon(iconName)}</div>
-        ${badge ? `<span class="pill red">확인 필요</span>` : ""}
-      </div>
-      <h3>${title}</h3>
-      <p class="section-desc">${desc}</p>
+    <button class="stat-card ${tone || ""}" onclick="setRoute('${route}')">
+      <span class="stat-card-label">${label}</span>
+      <strong class="stat-card-value">${count}<em>${unit}</em></strong>
     </button>
   `;
 }
 
+function expiryBadge(dateString) {
+  const d = daysUntil(dateString);
+  if (d === null) return "";
+  if (d < 0) return `<span class="pill red">만료 ${-d}일 지남</span>`;
+  if (d === 0) return `<span class="pill red">오늘 만료</span>`;
+  if (d <= EXPIRY_SOON_DAYS) return `<span class="pill gold">D-${d}</span>`;
+  return `<span class="pill">D-${d}</span>`;
+}
+
+function sentBadge(memberId, kind) {
+  const hit = state.messages.find((m) => m.memberId === memberId && m.kind === kind);
+  if (!hit) return `<span class="sent-no">미발송</span>`;
+  return `<span class="sent-yes">${icon("check")}${formatDate(hit.sentAt)} 발송</span>`;
+}
+
+function adminHome() {
+  const { expiring, unpaid, pending, upcoming } = adminStats();
+  return shell("admin", `
+    <div class="view-title">
+      <div>
+        <p class="section-label">ADMIN</p>
+        <h1>오늘 확인할 것</h1>
+        <p>만료가 다가온 회원과 처리할 일만 모아 보여 드립니다. 문자는 자동으로 나갑니다.</p>
+      </div>
+    </div>
+
+    <section class="stat-row">
+      ${statCard("만료 임박", expiring.length, "명", "admin-members", expiring.length ? "warn" : "")}
+      ${statCard("회비 미납", unpaid.length, "명", "admin-members", unpaid.length ? "danger" : "")}
+      ${statCard("가입 승인 대기", pending.length, "명", "admin-approvals", pending.length ? "danger" : "")}
+      ${statCard("이번 주 예약", upcoming.length, "건", "admin-bookings", "")}
+    </section>
+
+    <section class="panel-grid">
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>${icon("clock")}연회비 만료 임박</h3>
+          <span class="panel-note">만료 ${EXPIRY_SOON_DAYS}일 전 자동 발송</span>
+        </div>
+        ${expiring.length ? `
+          <div class="panel-list">
+            ${expiring.map((m) => `
+              <div class="panel-row">
+                <div class="panel-row-main">
+                  <strong>${m.name}</strong>
+                  <span class="pill ${m.grade === "VVIP" ? "gold" : ""}">${m.grade}</span>
+                  ${expiryBadge(m.expiresAt)}
+                </div>
+                <div class="panel-row-sub">
+                  <span>${formatDate(m.expiresAt)} 만료 · ${m.phone}</span>
+                  ${sentBadge(m.id, "만료 안내")}
+                </div>
+                <div class="panel-row-actions">
+                  <button class="mini-btn primary" onclick="sendManual(${m.id}, '만료 안내')">${icon("phone")}문자 보내기</button>
+                  <button class="mini-btn" onclick="selectMember(${m.id})">${icon("user")}회원 보기</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        ` : `<p class="panel-empty">만료가 임박한 회원이 없습니다.</p>`}
+      </div>
+
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>${icon("people")}가입 승인 대기</h3>
+          <span class="panel-note">승인 시 문자 자동 발송</span>
+        </div>
+        ${pending.length ? `
+          <div class="panel-list">
+            ${pending.map((a) => `
+              <div class="panel-row">
+                <div class="panel-row-main">
+                  <strong>${a.name}</strong>
+                  <span class="pill ${a.grade === "VVIP" ? "gold" : ""}">${a.grade}</span>
+                </div>
+                <div class="panel-row-sub"><span>${a.phone} · 관심 분야 ${a.interests}</span></div>
+                <div class="panel-row-actions">
+                  <button class="mini-btn green" onclick="approveApplication(${a.id})">${icon("check")}승인</button>
+                  <button class="mini-btn danger" onclick="rejectApplication(${a.id})">${icon("x")}반려</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        ` : `<p class="panel-empty">대기 중인 신청이 없습니다.</p>`}
+      </div>
+
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>${icon("calendar")}이번 주 예약</h3>
+          <span class="panel-note">오늘부터 7일</span>
+        </div>
+        ${upcoming.length ? `
+          <div class="panel-list">
+            ${upcoming.map((b) => `
+              <div class="panel-row">
+                <div class="panel-row-main">
+                  <strong>${b.member}</strong>
+                  <span class="pill ${b.status === "확정" ? "green" : "gold"}">${b.status}</span>
+                </div>
+                <div class="panel-row-sub"><span>${formatDate(b.date)} · ${b.time} · 게스트 ${b.guests}명</span></div>
+                ${b.status === "신청" ? `
+                  <div class="panel-row-actions">
+                    <button class="mini-btn green" onclick="confirmBooking(${b.id})">${icon("check")}확정하고 문자 보내기</button>
+                  </div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        ` : `<p class="panel-empty">이번 주 예약이 없습니다.</p>`}
+      </div>
+
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>${icon("money")}회비 미납</h3>
+          <span class="panel-note">입금 확인 후 눌러 주세요</span>
+        </div>
+        ${unpaid.length ? `
+          <div class="panel-list">
+            ${unpaid.map((m) => `
+              <div class="panel-row">
+                <div class="panel-row-main">
+                  <strong>${m.name}</strong>
+                  <span class="pill ${m.grade === "VVIP" ? "gold" : ""}">${m.grade}</span>
+                  <span class="pill red">미납</span>
+                </div>
+                <div class="panel-row-sub"><span>${m.phone} · ${formatDate(m.expiresAt)} 만료</span></div>
+                <div class="panel-row-actions">
+                  <button class="mini-btn green" onclick="togglePaid(${m.id})">${icon("check")}입금 확인됨</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        ` : `<p class="panel-empty">미납 회원이 없습니다.</p>`}
+      </div>
+    </section>
+  `);
+}
+
+function filteredMembers() {
+  const f = state.memberFilter;
+  const q = f.q.trim();
+  return state.members.filter((m) => {
+    if (q && !m.name.includes(q) && !m.phone.includes(q)) return false;
+    if (f.grade !== "전체" && m.grade !== f.grade) return false;
+    if (f.status === "만료 임박") {
+      const d = daysUntil(m.expiresAt);
+      if (d === null || d > EXPIRY_SOON_DAYS) return false;
+    }
+    if (f.status === "미납" && m.paid) return false;
+    return true;
+  });
+}
+
+function adminMembers() {
+  const list = filteredMembers();
+  const f = state.memberFilter;
+  const selected = state.members.find((m) => m.id === state.selectedMemberId) || list[0];
+  const chip = (key, value, label) =>
+    `<button class="filter-chip ${f[key] === value ? "active" : ""}" onclick="setMemberFilter('${key}','${value}')">${label}</button>`;
+
+  return shell("admin", `
+    <div class="view-title">
+      <div>
+        <p class="section-label">ADMIN</p>
+        <h1>회원 명단</h1>
+        <p>엑셀로 관리하시던 명단입니다. 이름이나 번호 일부만 입력해도 찾을 수 있습니다.</p>
+      </div>
+    </div>
+
+    <section class="member-layout">
+      <div class="card member-list-card">
+        <div class="filter-bar">
+          <input class="search-input" value="${f.q}" oninput="setMemberFilter('q', this.value)"
+                 placeholder="이름 또는 번호로 검색" />
+          <div class="filter-chips">
+            ${chip("grade", "전체", "전체 등급")}
+            ${chip("grade", "VIP", "VIP")}
+            ${chip("grade", "VVIP", "VVIP")}
+          </div>
+          <div class="filter-chips">
+            ${chip("status", "전체", "전체")}
+            ${chip("status", "만료 임박", "만료 임박")}
+            ${chip("status", "미납", "미납")}
+          </div>
+        </div>
+        <p class="list-count">${list.length}명</p>
+        <div class="member-list">
+          ${list.length ? list.map((m) => `
+            <button class="member-row ${selected && selected.id === m.id ? "active" : ""}" onclick="selectMember(${m.id})">
+              <span class="member-row-name">
+                <strong>${m.name}</strong>
+                <span class="pill ${m.grade === "VVIP" ? "gold" : ""}">${m.grade}</span>
+              </span>
+              <span class="member-row-meta">
+                ${expiryBadge(m.expiresAt)}
+                ${m.paid ? "" : `<span class="pill red">미납</span>`}
+              </span>
+            </button>
+          `).join("") : `<p class="panel-empty">조건에 맞는 회원이 없습니다.</p>`}
+        </div>
+      </div>
+
+      ${selected ? memberPanel(selected) : `<div class="card pad"><p class="panel-empty">회원을 선택해 주세요.</p></div>`}
+    </section>
+  `);
+}
+
+function memberPanel(m) {
+  const history = state.bookings.filter((b) => b.memberId === m.id);
+  const guestTotal = history.reduce((sum, b) => sum + b.guests, 0);
+  const sent = state.messages.filter((x) => x.memberId === m.id);
+  return `
+    <div class="card pad member-detail">
+      <div class="member-detail-head">
+        <div>
+          <h2>${m.name}</h2>
+          <p class="member-detail-sub">${m.phone}</p>
+        </div>
+        <span class="pill ${m.grade === "VVIP" ? "gold" : ""}">${m.grade}</span>
+      </div>
+
+      <dl class="spec-list">
+        <div><dt>가입일</dt><dd>${formatDate(m.joinedAt)}</dd></div>
+        <div><dt>연회비 만료</dt><dd>${formatDate(m.expiresAt)} ${expiryBadge(m.expiresAt)}</dd></div>
+        <div><dt>납부 상태</dt><dd>${m.paid ? `<span class="pill green">납부</span>` : `<span class="pill red">미납</span>`}</dd></div>
+        <div><dt>이용 횟수</dt><dd>${history.length}회 · 누적 게스트 ${guestTotal}명 (${won(guestTotal * 10000)})</dd></div>
+      </dl>
+
+      <div class="member-actions">
+        <button class="mini-btn ${m.paid ? "" : "green"}" onclick="togglePaid(${m.id})">${icon("money")}${m.paid ? "미납으로 변경" : "입금 확인됨"}</button>
+        <button class="mini-btn primary" onclick="sendManual(${m.id}, '만료 안내')">${icon("phone")}만료 안내 문자</button>
+      </div>
+
+      <div class="member-block">
+        <h3>메모</h3>
+        <textarea class="memo-box" placeholder="응대 시 참고할 내용을 적어 두세요"
+                  oninput="updateMemo(${m.id}, this.value)">${m.memo || ""}</textarea>
+      </div>
+
+      <div class="member-block">
+        <h3>이용 내역</h3>
+        ${history.length ? history
+          .slice()
+          .sort((a, b) => (a.date < b.date ? 1 : -1))
+          .map((b) => `<div class="row"><span>${formatDate(b.date)} · ${b.time}</span><strong>게스트 ${b.guests}명</strong></div>`)
+          .join("") : `<p class="panel-empty">이용 내역이 없습니다.</p>`}
+      </div>
+
+      <div class="member-block">
+        <h3>보낸 문자</h3>
+        ${sent.length ? sent
+          .map((x) => `<div class="row"><span>${formatDate(x.sentAt)} · ${x.kind}</span><strong>${x.auto ? "자동" : "수동"}</strong></div>`)
+          .join("") : `<p class="panel-empty">보낸 문자가 없습니다.</p>`}
+      </div>
+    </div>
+  `;
+}
+
+function adminMessages() {
+  return shell("admin", `
+    <div class="view-title">
+      <div>
+        <p class="section-label">ADMIN</p>
+        <h1>문자 발송</h1>
+        <p>아래 상황에서는 문자가 자동으로 나갑니다. 직접 보내실 수도 있습니다.</p>
+      </div>
+    </div>
+
+    <section class="grid two">
+      <div class="card pad">
+        <h3>자동 발송 규칙</h3>
+        <dl class="spec-list">
+          <div><dt>가입 승인</dt><dd>승인 버튼을 누른 즉시</dd></div>
+          <div><dt>연회비 만료 안내</dt><dd>만료 30일 전 · 7일 전</dd></div>
+          <div><dt>예약 확정</dt><dd>확정 버튼을 누른 즉시</dd></div>
+        </dl>
+        <p class="panel-note" style="margin-top:14px;">
+          실제 서비스에서는 카카오 알림톡으로 보내고, 실패하면 문자로 다시 보냅니다.
+        </p>
+      </div>
+
+      <div class="card pad">
+        <h3>발송 집계</h3>
+        <div class="row"><span>자동 발송</span><strong>${state.messages.filter((m) => m.auto).length}건</strong></div>
+        <div class="row"><span>직접 발송</span><strong>${state.messages.filter((m) => !m.auto).length}건</strong></div>
+        <div class="row"><span>합계</span><strong>${state.messages.length}건</strong></div>
+      </div>
+    </section>
+
+    <section class="card table-wrap" style="margin-top:14px;">
+      <table>
+        <thead><tr><th>보낸 날짜</th><th>받는 분</th><th>연락처</th><th>종류</th><th>방식</th><th>내용</th></tr></thead>
+        <tbody>
+          ${state.messages.map((m) => `
+            <tr>
+              <td>${formatDate(m.sentAt)}</td>
+              <td>${m.name}</td>
+              <td>${m.phone}</td>
+              <td><span class="pill ${m.kind === "가입 승인" ? "green" : m.kind === "만료 안내" ? "gold" : ""}">${m.kind}</span></td>
+              <td>${m.auto ? "자동" : "직접"}</td>
+              <td class="msg-text">${m.text}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </section>
+  `);
+}
+
+function selectMember(id) {
+  state.selectedMemberId = id;
+  if (state.route !== "admin-members") state.route = "admin-members";
+  render();
+}
+
+function setMemberFilter(key, value) {
+  state.memberFilter[key] = value;
+  render();
+}
+
+function updateMemo(id, value) {
+  const m = state.members.find((x) => x.id === id);
+  if (m) m.memo = value; // 입력 중에는 다시 그리지 않는다 (커서가 튄다)
+}
+
+function togglePaid(id) {
+  const m = state.members.find((x) => x.id === id);
+  if (!m) return;
+  m.paid = !m.paid;
+  render();
+}
+
+function sendManual(id, kind) {
+  const m = state.members.find((x) => x.id === id);
+  if (!m) return;
+  const text = kind === "만료 안내"
+    ? `${m.name}님의 ${m.grade} 회원 기간이 ${formatDate(m.expiresAt)} 만료됩니다. 연회비 안내드립니다.`
+    : `${m.name}님께 안내드립니다.`;
+  logMessage(m, kind, text, false);
+  render();
+}
+
+function confirmBooking(id) {
+  const b = state.bookings.find((x) => x.id === id);
+  if (!b) return;
+  b.status = "확정";
+  const m = state.members.find((x) => x.id === b.memberId);
+  if (m) {
+    logMessage(m, "예약 확정", `${m.name}님의 예약이 확정되었습니다. ${formatDate(b.date)} ${b.time}`, true);
+  }
+  render();
+}
+
 function adminApprovals() {
-  return shell("admin", adminTableView("가입 승인", "회원 가입 신청을 승인하거나 반려합니다.", `
+  return shell("admin", adminTableView("가입 승인", "승인하면 신청자에게 문자가 자동으로 발송됩니다.", `
     <table>
       <thead><tr><th>이름</th><th>연락처</th><th>희망 등급</th><th>관심 분야</th><th>상태</th><th>처리</th></tr></thead>
       <tbody>
@@ -937,12 +1342,13 @@ function adminApprovals() {
             <td>${item.phone}</td>
             <td><span class="pill ${item.grade === "VVIP" ? "gold" : ""}">${item.grade}</span></td>
             <td>${item.interests}</td>
-            <td>${item.status}</td>
+            <td><span class="pill ${item.status === "승인" ? "green" : item.status === "반려" ? "red" : "gold"}">${item.status}</span></td>
             <td>
-              <div class="table-actions">
-                <button class="mini-btn green" onclick="approveApplication(${item.id})">${icon("check")}승인</button>
-                <button class="mini-btn danger" onclick="rejectApplication(${item.id})">${icon("x")}반려</button>
-              </div>
+              ${item.status === "대기" ? `
+                <div class="table-actions">
+                  <button class="mini-btn green" onclick="approveApplication(${item.id})">${icon("check")}승인</button>
+                  <button class="mini-btn danger" onclick="rejectApplication(${item.id})">${icon("x")}반려</button>
+                </div>` : `<span class="sent-no">처리 완료</span>`}
             </td>
           </tr>
         `).join("")}
@@ -957,8 +1363,8 @@ function adminRegister() {
     <div class="view-title">
       <div>
         <p class="section-label">ADMIN</p>
-        <h1>대신 등록</h1>
-        <p>전화나 현장 접수 회원을 운영진이 직접 등록합니다.</p>
+        <h1>회원 등록</h1>
+        <p>전화나 현장에서 접수한 회원을 직접 등록합니다. 등록하면 명단에 바로 들어갑니다.</p>
       </div>
     </div>
     <section class="grid two">
@@ -975,49 +1381,38 @@ function adminRegister() {
         <button class="primary-btn" onclick="addMemberByAdmin()">${icon("plus")}회원 등록</button>
       </div>
       <div class="card pad">
-        <p class="section-label">RECENT MEMBERS</p>
-        ${state.members.slice(0, 4).map((item) => `<div class="row"><span>${item.name}</span><strong>${item.grade}</strong></div>`).join("")}
+        <h3>최근 등록된 회원</h3>
+        ${state.members.slice(0, 6).map((item) => `
+          <div class="row">
+            <span>${item.name} · ${item.phone}</span>
+            <strong>${item.grade}</strong>
+          </div>
+        `).join("")}
       </div>
     </section>
   `);
 }
 
-function adminFees() {
-  return shell("admin", adminTableView("회비 관리", "회원별 납부 상태와 만료일을 관리합니다.", `
-    <table>
-      <thead><tr><th>회원</th><th>등급</th><th>연락처</th><th>만료일</th><th>납부 상태</th><th>처리</th></tr></thead>
-      <tbody>
-        ${state.members.map((item) => `
-          <tr>
-            <td>${item.name}</td>
-            <td><span class="pill ${item.grade === "VVIP" ? "gold" : ""}">${item.grade}</span></td>
-            <td>${item.phone}</td>
-            <td>${item.expiresAt}</td>
-            <td><span class="pill ${item.paid ? "green" : "red"}">${item.paid ? "납부" : "미납"}</span></td>
-            <td><button class="mini-btn primary" onclick="const m=state.members.find(x=>x.id===${item.id});m.paid=!m.paid;render();">${icon("refresh")}상태 변경</button></td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `));
-}
-
 function adminBookings() {
-  return shell("admin", adminTableView("예약 현황", "전체 예약 신청과 확정 상태를 확인합니다.", `
+  return shell("admin", adminTableView("예약 현황", "확정하면 회원에게 문자가 자동으로 발송됩니다.", `
     <table>
-      <thead><tr><th>회원</th><th>날짜</th><th>시간</th><th>게스트</th><th>상태</th><th>처리</th></tr></thead>
+      <thead><tr><th>회원</th><th>날짜</th><th>시간</th><th>게스트</th><th>게스트 이용료</th><th>상태</th><th>처리</th></tr></thead>
       <tbody>
-        ${state.bookings.map((item) => `
+        ${state.bookings
+          .slice()
+          .sort((a, b) => (a.date < b.date ? 1 : -1))
+          .map((item) => `
           <tr>
             <td>${item.member}</td>
             <td>${formatDate(item.date)}</td>
             <td>${item.time}</td>
             <td>${item.guests}명</td>
+            <td>${item.guests ? won(item.guests * 10000) : "-"}</td>
             <td><span class="pill ${item.status === "확정" ? "green" : item.status === "신청" ? "gold" : ""}">${item.status}</span></td>
             <td>
               <div class="table-actions">
-                <button class="mini-btn green" onclick="const b=state.bookings.find(x=>x.id===${item.id});b.status='확정';render();">${icon("check")}확정</button>
-                <button class="mini-btn" onclick="const b=state.bookings.find(x=>x.id===${item.id});b.status='완료';render();">${icon("check")}완료</button>
+                ${item.status === "신청" ? `<button class="mini-btn green" onclick="confirmBooking(${item.id})">${icon("check")}확정</button>` : ""}
+                ${item.status !== "완료" ? `<button class="mini-btn" onclick="const b=state.bookings.find(x=>x.id===${item.id});b.status='완료';render();">${icon("check")}완료</button>` : ""}
               </div>
             </td>
           </tr>
@@ -1028,24 +1423,34 @@ function adminBookings() {
 }
 
 function adminSettlement() {
-  const totalGuests = state.bookings.reduce((sum, item) => sum + item.guests, 0);
+  const rows = state.bookings.filter((b) => b.guests > 0);
+  const totalGuests = rows.reduce((sum, item) => sum + item.guests, 0);
   const total = totalGuests * 10000;
   return shell("admin", `
     <div class="view-title">
       <div>
         <p class="section-label">ADMIN</p>
         <h1>게스트 정산</h1>
-        <p>게스트 이용료는 1인당 10,000원으로 계산합니다.</p>
+        <p>게스트 이용료는 1인당 10,000원입니다. 예약에 입력된 인원으로 자동 계산됩니다.</p>
       </div>
     </div>
     <section class="grid two">
       <div class="dash-hero">
         <p class="eyebrow">TOTAL</p>
         <h1>${won(total)}</h1>
-        <p style="color:rgba(255,255,255,.72);">총 게스트 ${totalGuests}명 기준</p>
+        <p style="color:rgba(255,255,255,.72);">게스트 ${totalGuests}명 · ${rows.length}건</p>
       </div>
       <div class="card pad">
-        ${state.bookings.map((item) => `<div class="row"><span>${item.member} · ${formatDate(item.date)}</span><strong>${won(item.guests * 10000)}</strong></div>`).join("")}
+        <h3>건별 내역</h3>
+        ${rows.length ? rows
+          .slice()
+          .sort((a, b) => (a.date < b.date ? 1 : -1))
+          .map((item) => `
+            <div class="row">
+              <span>${formatDate(item.date)} · ${item.member} · ${item.guests}명</span>
+              <strong>${won(item.guests * 10000)}</strong>
+            </div>
+          `).join("") : `<p class="panel-empty">게스트 동반 내역이 없습니다.</p>`}
       </div>
     </section>
   `);
@@ -1076,10 +1481,11 @@ function render() {
     reservations,
     myinfo,
     admin: adminHome,
+    "admin-members": adminMembers,
     "admin-approvals": adminApprovals,
-    "admin-register": adminRegister,
-    "admin-fees": adminFees,
     "admin-bookings": adminBookings,
+    "admin-messages": adminMessages,
+    "admin-register": adminRegister,
     "admin-settlement": adminSettlement,
   };
   const view = views[state.route] || landing;
@@ -1098,6 +1504,12 @@ Object.assign(window, {
   approveApplication,
   rejectApplication,
   addMemberByAdmin,
+  selectMember,
+  setMemberFilter,
+  updateMemo,
+  togglePaid,
+  sendManual,
+  confirmBooking,
   render,
 });
 
